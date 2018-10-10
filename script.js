@@ -1,5 +1,7 @@
 var ctx = document.getElementById("c").getContext("2d");
 // Hejsan
+
+//Haj
 var textures = [
     document.getElementsByTagName("img")[1],
     document.getElementsByTagName("img")[0],

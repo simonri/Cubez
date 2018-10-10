@@ -86,6 +86,7 @@ function Game() {
                 (e.clientX > x && e.clientX < x + tiles[i].w / 2) &&
                 (e.clientY > y && e.clientY < y + tiles[i].h / 4)
             ) {
+                data[tiles[i].cY][tiles[i].cX] = (tiles[i].texture < textures.length - 1) ? tiles[i].texture + 1 : 0;
                 tiles[i].texture = (tiles[i].texture < textures.length - 1) ? tiles[i].texture + 1 : 0;
             }
         }
@@ -98,20 +99,16 @@ function Game() {
     document.onmouseup = function() { document.onmousemove = null };
     
     this.saveData = function() {
-      let file = new Blob(tiles.map((x, i) => { return x.texture + ":" + x.cX + ":" + x.cY + "\n" }), {type: "txt"});
-      
-      console.log(tiles.map((x, i) => { return x.texture + ":" + x.cX + ":" + x.cY + "\n" }));
-    
-      let a = document.createElement("a"),
-          url = URL.createObjectURL(file);
-      a.href = url;
-      a.download = "data.txt";
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(function() {
-          document.body.removeChild(a);
-          window.URL.revokeObjectURL(url);
-      }, 0);
+        let a = document.createElement("a");
+        let url = URL.createObjectURL(new Blob([data.join("\n")], {type: "txt"}));
+        
+        a.href = url;
+        a.download = "data.txt";
+        
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
     };
 
     this.loop = function() {

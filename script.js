@@ -1,6 +1,7 @@
 var ctx = document.getElementById("c").getContext("2d");
 
 // Hej san Jag heter Simon
+// Ojsan... d
 
 var textures = [
     document.getElementsByTagName("img")[1],

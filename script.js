@@ -1,5 +1,7 @@
 var ctx = document.getElementById("c").getContext("2d");
 
+// Hej
+
 var textures = [
     document.getElementsByTagName("img")[1],
     document.getElementsByTagName("img")[0],
@@ -21,7 +23,7 @@ function Tile(cX, cY, w, h, texture) {
     this.texture = texture;
 
     this.render = function() {
-        if(this.texture == 3) {
+        if(this.texture === 3) {
             ctx.drawImage(textures[1], 0, 0, 256, 512, this.x, this.y, this.w, this.h);
             ctx.drawImage(textures[this.texture], 0, 0, 256, 512, this.x, this.y, this.w, this.h);
 
@@ -102,7 +104,7 @@ function Game() {
         }
     };
 
-    document.onmouseup = function(e) { document.onmousemove = null; };
+    document.onmouseup = function() { document.onmousemove = null; };
 
     this.loop = function() {
         this.render();

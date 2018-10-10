@@ -1,7 +1,5 @@
 var ctx = document.getElementById("c").getContext("2d");
 
-// Hai
-
 var textures = [
     document.getElementsByTagName("img")[1],
     document.getElementsByTagName("img")[0],
@@ -81,26 +79,40 @@ function Game() {
     }
 
     document.onmousedown = function(e) {
-        console.log(e.clientY);
-        for(i = 0; i < tiles.length; i++) {
+      for(i = 0; i < tiles.length; i++) {
             let x = tiles[i].cX * (tiles[i].w / 2);
             let y = tiles[i].cY * (tiles[i].h / 4);
             if(
                 (e.clientX > x && e.clientX < x + tiles[i].w / 2) &&
                 (e.clientY > y && e.clientY < y + tiles[i].h / 4)
             ) {
-
                 tiles[i].texture = (tiles[i].texture < textures.length - 1) ? tiles[i].texture + 1 : 0;
-
             }
         }
         document.onmousemove = function(e) {
             mouse.x += e.movementX;
             mouse.y += e.movementY;
-        }
+        };
     };
 
-    document.onmouseup = function() { document.onmousemove = null; };
+    document.onmouseup = function() { document.onmousemove = null };
+    
+    this.saveData = function() {
+      let file = new Blob(tiles.map((x, i) => { return x.texture + ":" + x.cX + ":" + x.cY + "\n" }), {type: "txt"});
+      
+      console.log(tiles.map((x, i) => { return x.texture + ":" + x.cX + ":" + x.cY + "\n" }));
+    
+      let a = document.createElement("a"),
+          url = URL.createObjectURL(file);
+      a.href = url;
+      a.download = "data.txt";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function() {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+      }, 0);
+    };
 
     this.loop = function() {
         this.render();
@@ -138,19 +150,7 @@ function Game() {
     };
 }
 
-new Game().loop();
+var game = new Game();
+game.loop();
 
-/*document.getElementById("save").onclick = function() {
-  var file = new Blob([game.], {type: type});
-
-  var a = document.createElement("a"),
-          url = URL.createObjectURL(file);
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(function() {
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-  }, 0);
-}*/
+document.getElementById("save").onclick = function() { game.saveData() };

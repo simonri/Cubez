@@ -8,6 +8,8 @@ var textures = [
     document.getElementsByTagName("img")[4],
 ];
 
+// Mmm
+
 function Tile(cX, cY, w, h, texture) {
     this.cX = cX;
     this.cY = cY;

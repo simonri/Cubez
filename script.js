@@ -23,14 +23,10 @@ function Tile(cX, cY, w, h, texture) {
     this.render = function() {
         if(this.texture === 3) {
             ctx.drawImage(textures[1], 0, 0, 256, 512, this.x, this.y, this.w, this.h);
-            ctx.drawImage(textures[this.texture], 0, 0, 256, 512, this.x, this.y, this.w, this.h);
-
             ctx.drawImage(textures[1], 0, 512 / 2, 256, 512 / 2, this.cX * (this.w / 2), this.cY * (this.h / 4), this.w / 2, this.h / 4);
-            ctx.drawImage(textures[this.texture], 0, 512 / 2, 256, 512 / 2, this.cX * (this.w / 2), this.cY * (this.h / 4), this.w / 2, this.h / 4);
-        } else {
-            ctx.drawImage(textures[this.texture], 0, 0, 256, 512, this.x, this.y, this.w, this.h);
-            ctx.drawImage(textures[this.texture], 0, 512 / 2, 256, 512 / 2, this.cX * (this.w / 2), this.cY * (this.h / 4), this.w / 2, this.h / 4);
         }
+        ctx.drawImage(textures[this.texture], 0, 0, 256, 512, this.x, this.y, this.w, this.h);
+        ctx.drawImage(textures[this.texture], 0, 512 / 2, 256, 512 / 2, this.cX * (this.w / 2), this.cY * (this.h / 4), this.w / 2, this.h / 4);
 
     };
 

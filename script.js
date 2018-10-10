@@ -1,7 +1,5 @@
 var ctx = document.getElementById("c").getContext("2d");
 
-// Hej
-
 var textures = [
     document.getElementsByTagName("img")[1],
     document.getElementsByTagName("img")[0],
@@ -9,8 +7,6 @@ var textures = [
     document.getElementsByTagName("img")[3],
     document.getElementsByTagName("img")[4],
 ];
-
-// Mmm
 
 function Tile(cX, cY, w, h, texture) {
     this.cX = cX;

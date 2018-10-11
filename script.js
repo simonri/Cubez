@@ -1,7 +1,7 @@
 'use strict';
 const ctx = document.getElementById("c").getContext("2d");
 
-const textures = ["slab","floor","wall","button","grass"].map((file) => {
+const textures = ["iso1","iso2"].map((file) => {
     let img = new Image();
     img.src = "assets/" + file + ".png";
     return img;
@@ -23,11 +23,11 @@ class Tile {
 
     render(devMode) {
         if(this.texture === 3) {
-            ctx.drawImage(textures[1], 0, 0, 256, 512, this.x, this.y, this.w, this.h);
+            ctx.drawImage(textures[1], 0, 0, textures[1].width, textures[1].height, this.x, this.y, this.w, this.h);
             if(devMode)
-                ctx.drawImage(textures[1], 256/2 - 27, (512/4)*3+3, 54, 54, this.cX * (this.w / 2), this.cY * (this.h / 4), this.w / 2, this.h / 4);
+                ctx.drawImage(textures[1], 256/2 - 27, (512/2)*3+3, 54, 54, this.cX * (this.w / 2), this.cY * (this.h / 4), this.w / 2, this.h / 4);
         }
-        ctx.drawImage(textures[this.texture], 0, 0, 256, 512, this.x, this.y, this.w, this.h);
+        ctx.drawImage(textures[this.texture], 0, 0, textures[this.texture].width, textures[this.texture].height, this.x, this.y, this.w, this.h);
         if(devMode) // ctx.drawImage(textures[this.texture], 0, 512 / 2, 256, 512 / 2, this.cX * (this.w / 2), this.cY * (this.h / 4), this.w / 2, this.h / 4);
             ctx.drawImage(textures[this.texture], 256/2 - 27, (512/4)*3+3, 54, 54, this.cX * (this.w / 2), this.cY * (this.h / 4), this.w / 2, this.h / 4);
 
@@ -46,26 +46,24 @@ class Game {
 
         this.mouse = { x: 0, y: 0 };
 
-        this.worldSize = 900;
-        this.offset = this.worldSize * 0.105;
+        this.worldSize = 1000;
+        this.offset = this.worldSize * 0.1264;
 
         this.offsetX = 0;
         this.offsetY = 0;
 
         this.data = [
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,1,1,0,0,0],
-            [0,0,0,1,1,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
+            [1,1,1,1,1,1],
+            [1,0,0,0,0,1],
+            [1,0,0,0,0,1],
+            [1,0,0,0,0,1],
+            [1,0,0,0,0,1],
+            [1,1,1,1,1,1],
         ];
         this.tiles = [];
 
         this.tileWidth = this.worldSize / this.data.length;
-        this.tileHeight = (this.worldSize / this.data.length) * (512 / 256);
+        this.tileHeight = this.worldSize / this.data.length;
 
         this.times = [];
 
@@ -140,8 +138,8 @@ class Game {
         for(var i = this.tiles.length - 1; i >= 0; i--) {
             let t = this.tiles[i];
 
-            let x = t.cX * t.w / 2 + t.cY * t.w / 2 + ctx.canvas.width / 2 + this.offsetX - (this.data.length * t.w / 2 + this.data.length * t.w / 2) / 2;
-            let y = t.cY / 2 * (t.h - this.offset) / 2 - t.cX / 2 * (t.h - this.offset) / 2 + ctx.canvas.height / 2 + 60 + this.offsetY - this.data.length / 2 * (t.h - this.offset) / 2;
+            let x = t.cX * (t.w - 97) + t.cY * (t.w - 97) + ctx.canvas.width / 2 + this.offsetX - (this.data.length * t.w + this.data.length * t.w) / 2;
+            let y = t.cY * (t.h - this.offset) - t.cX * (t.h - this.offset) + ctx.canvas.height / 2 + this.offsetY - this.data.length / 2 * (t.h - this.offset) / 2;
 
             this.tiles[i].update(x, y);
             this.tiles[i].render(this.devMode);

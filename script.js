@@ -153,3 +153,5 @@ document.getElementById("dev").onclick = () => game.devMode = !game.devMode;
 
 document.onmousedown = e => { game.clickTile(e); document.onmousemove = e => game.mouseMoved(e); };
 document.onmouseup = () => document.onmousemove = null;
+
+// https://dev.to/washingtonsteven/playing-with-canvas-and-es6-classes

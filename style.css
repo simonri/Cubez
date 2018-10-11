@@ -19,10 +19,6 @@ canvas {
     color: white;
 }
 
-#fps:before {
-    content: "FPS: ";
-}
-
 #save {
     position: fixed;
     top: 10px;

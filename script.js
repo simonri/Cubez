@@ -1,6 +1,5 @@
+'use strict';
 var ctx = document.getElementById("c").getContext("2d");
-
-// Hej
 
 var textures = [
     document.getElementsByTagName("img")[1],
@@ -115,7 +114,7 @@ function Game() {
 
     this.loop = function() {
         this.render();
-        document.getElementById("fps").innerHTML = times.length;
+        document.getElementById("fps").innerHTML = times.length + "- " + Math.floor((performance.memory.usedJSHeapSize / performance.memory.totalJSHeapSize) * 100) + "%";
 
         window.requestAnimationFrame(() => {
             let now = performance.now();

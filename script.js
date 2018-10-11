@@ -1,7 +1,11 @@
 'use strict';
 const ctx = document.getElementById("c").getContext("2d");
 
-const textures = document.getElementsByTagName("img");
+const textures = ["slab","floor","wall","button","grass"].map((file) => {
+    let img = new Image();
+    img.src = "assets/" + file + ".png";
+    return img;
+});
 
 class Tile {
     constructor(cX, cY, w, h, texture) {
@@ -108,7 +112,7 @@ class Game {
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
-    };
+    }
 
     loop() {
         this.render();
@@ -122,7 +126,7 @@ class Game {
             this.times.push(now);
             this.loop();
         });
-    };
+    }
 
     render() {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.width);
@@ -142,7 +146,7 @@ class Game {
             this.tiles[i].update(x, y);
             this.tiles[i].render(this.devMode);
         }
-    };
+    }
 }
 
 const game = new Game();

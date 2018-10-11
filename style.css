@@ -17,12 +17,23 @@ canvas {
     left: 10px;
     font-size: 14px;
     color: white;
+    cursor: pointer;
 }
 
 #save {
     position: fixed;
     top: 10px;
     right: 10px;
+    color: white;
+    cursor: pointer;
+    cursor: pointer;
+}
+
+#dev {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    font-size: 14px;
     color: white;
     cursor: pointer;
 }

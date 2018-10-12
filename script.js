@@ -1,11 +1,40 @@
 'use strict';
 const ctx = document.getElementById("c").getContext("2d");
 
-const textures = ["iso1","iso2"].map((file) => {
-    let img = new Image();
-    img.src = "assets/" + file + ".png";
-    return img;
-});
+class Debugger {
+    constructor() {
+        this.mode = false;
+        this.FPSRecords = [];
+
+        document.getElementById("dev").onclick = () => this.mode = !this.mode;
+    }
+
+    /*if(this.mode) {
+    for(let i = 0; i < this.tiles.length; i++) {
+        let t = this.tiles[i];
+
+        let x = t.cX * (t.w / 2);
+        let y = t.cY * (t.h / 4);
+
+        if (e.clientX > x && e.clientX < x + t.w / 2) {
+        if ((e.clientY > y && e.clientY < y + t.h / 4)) {
+        this.data[t.cY][t.cX] = (t.texture < textures.length - 1) ? t.texture + 1 : 0;
+        this.tiles[i].texture = (t.texture < textures.length - 1) ? t.texture + 1 : 0;
+        }
+        }
+        }
+    }*/
+
+    calcFPS() {
+        let now = performance.now();
+        while(this.FPSRecords.length > 0 && this.FPSRecords[0] <= now - 1000) {
+            this.FPSRecords.shift();
+        }
+        this.FPSRecords.push(now);
+
+        document.getElementById("fps").innerHTML = this.FPSRecords.length + " - " + Math.floor((performance.memory.usedJSHeapSize / performance.memory.totalJSHeapSize) * 100) + "%";
+    }
+}
 
 class Tile {
     constructor(cX, cY, w, h, texture) {
@@ -39,33 +68,94 @@ class Tile {
     }
 }
 
-class Game {
+class TextureManager {
     constructor() {
-        ctx.canvas.width = window.innerWidth;
-        ctx.canvas.height = window.innerHeight;
+        this.textures = ["iso1","iso2"].map((file) => {
+            let img = new Image();
+            img.src = "assets/" + file + ".png";
+            return img;
+        });
+    }
+}
 
-        this.mouse = { x: 0, y: 0 };
-
-        this.worldSize = 1000;
-        this.offset = this.worldSize * 0.1264;
-
-        this.offsetX = 0;
-        this.offsetY = 0;
-
-        this.data = [
-            [1,1,1,1,1,1],
-            [1,0,0,0,0,1],
-            [1,0,0,0,0,1],
-            [1,0,0,0,0,1],
-            [1,0,0,0,0,1],
-            [1,1,1,1,1,1],
-        ];
+class SpriteHandler {
+    constructor() {
         this.tiles = [];
+    }
+}
 
-        this.tileWidth = this.worldSize / this.data.length;
-        this.tileHeight = this.worldSize / this.data.length;
+class Input {
+    constructor(docBody) {
+        this.keys = [];
+        this.mouse = [];
 
-        this.times = [];
+        docBody.addEventListener("keyup", (e) => { this.keys[e.keyCode] = true; });
+        docBody.addEventListener("keydown", (e) => { this.keys[e.keyCode] = false; });
+
+        docBody.addEventListener("mousedown", (e) => { //game.clickTile(e);
+            docBody.addEventListener("mousemove", (e) => { this.mouse.x += e.movementX; this.mouse.y += e.movementY; } );
+        });
+        docBody.addEventListener("mouseup", () => document.onmousemove = null);
+    }
+}
+
+class Data {
+    constructor(props) {
+        this.data = Data.validate([
+            [1,1,1,1,1,1],
+            [1,0,0,0,0,1],
+            [1,0,0,0,0,1],
+            [1,0,0,0,0,1],
+            [1,0,0,0,0,1],
+            [1,1,1,1,1,1],
+        ], props);
+
+        document.getElementById("save").onclick = () => this.save();
+    }
+
+    static validate(d, props) {
+        return d.length === props.cols ? d : "Error";
+    }
+//https://medium.com/@yyang0903/static-objects-static-methods-in-es6-1c026dbb8bb1
+    save() {
+        let a = document.createElement("a");
+        let url = URL.createObjectURL(new Blob([this.data.join("\n")], {type: "txt"}));
+
+        a.href = url;
+        a.download = "data.txt";
+
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
+}
+
+class CVS {
+    constructor() {
+        this.canvas = document.getElementById("canvas");
+        this.ctx = canvas.getContext("2d");
+
+        this.props = {
+            width: 1000,
+            height: 1000,
+
+            cols: 6,
+            rows: 6,
+
+            scrollX: 0,
+            scrollY: 0,
+        };
+
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+
+        this.Input = new Input(document.body);
+        this.Debugger = new Debugger();
+        this.Data = new Data(this.props);
+        this.SpriteHandler = new SpriteHandler();
+        this.TextureManager = new TextureManager();
+
 
         for(let i = 0; i < this.data.length; i++) {
             for(let j = this.data.length - 1; j >= 0; j--) {
@@ -73,60 +163,10 @@ class Game {
             }
         }
 
-        this.devMode = false;
+        window.addEventListener("load", () => { this.update(); } );
     }
 
-    clickTile(e) {
-        if(this.devMode) {
-            for(let i = 0; i < this.tiles.length; i++) {
-                let t = this.tiles[i];
-
-                let x = t.cX * (t.w / 2);
-                let y = t.cY * (t.h / 4);
-
-                if (e.clientX > x && e.clientX < x + t.w / 2) {
-                    if ((e.clientY > y && e.clientY < y + t.h / 4)) {
-                        this.data[t.cY][t.cX] = (t.texture < textures.length - 1) ? t.texture + 1 : 0;
-                        this.tiles[i].texture = (t.texture < textures.length - 1) ? t.texture + 1 : 0;
-                    }
-                }
-            }
-        }
-    }
-
-    mouseMoved(e) {
-        this.mouse.x += e.movementX;
-        this.mouse.y += e.movementY;
-    }
-
-    saveData() {
-        let a = document.createElement("a");
-        let url = URL.createObjectURL(new Blob([this.data.join("\n")], {type: "txt"}));
-        
-        a.href = url;
-        a.download = "data.txt";
-        
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-    }
-
-    loop() {
-        this.render();
-        document.getElementById("fps").innerHTML = this.times.length + " - " + Math.floor((performance.memory.usedJSHeapSize / performance.memory.totalJSHeapSize) * 100) + "%";
-
-        window.requestAnimationFrame(() => {
-            let now = performance.now();
-            while(this.times.length > 0 && this.times[0] <= now - 1000) {
-                this.times.shift();
-            }
-            this.times.push(now);
-            this.loop();
-        });
-    }
-
-    render() {
+    update() {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.width);
 
         this.offsetX += ((this.mouse.x * 0.5 - this.offsetX) * 0.1);
@@ -144,16 +184,13 @@ class Game {
             this.tiles[i].update(x, y);
             this.tiles[i].render(this.devMode);
         }
+
+        window.requestAnimationFrame(() => { this.Debugger.calcFPS(); this.update();});
     }
 }
 
-const game = new Game();
-game.loop();
-
-document.getElementById("save").onclick = () => game.saveData();
-document.getElementById("dev").onclick = () => game.devMode = !game.devMode;
-
-document.onmousedown = e => { game.clickTile(e); document.onmousemove = e => game.mouseMoved(e); };
-document.onmouseup = () => document.onmousemove = null;
+(function() {
+    let cvs = new CVS();
+})()
 
 // https://dev.to/washingtonsteven/playing-with-canvas-and-es6-classes

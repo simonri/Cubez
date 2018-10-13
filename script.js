@@ -44,8 +44,11 @@ class Sprite {
         this.texture = texture;
     }
 
-    render(ctx) {
-        ctx.drawImage(this.texture, 0, 0, this.texture.width, this.texture.height, this.x, this.y, this.w, this.h);
+    render(ctx, props) {
+        let x = this.x * this.w / 2 + this.y * this.w / 2 + ctx.canvas.width / 2 + props.scrollX - (props.cols * this.w / 2 + props.cols * this.w / 2) / 2;
+        let y = this.y * (this.h - props.offset) - this.x * (this.h - props.offset) + ctx.canvas.height / 2 + props.scrollY - props.rows / 2 * (this.h - props.offset) / 2;
+
+        ctx.drawImage(this.texture, 0, 0, this.texture.width, this.texture.height, x, y, this.w, this.h);
     }
 
     update(x, y) {
@@ -73,9 +76,9 @@ class Input {
         docBody.addEventListener("keydown", (e) => { this.keys[e.keyCode] = false; });
 
         docBody.addEventListener("mousedown", (e) => { //game.clickTile(e);
-            docBody.addEventListener("mousemove", (e) => { this.mouse.x += e.movementX; this.mouse.y += e.movementY; } );
+            docBody.onmousemove = (e) => { this.mouse.x += e.movementX; this.mouse.y += e.movementY; };
         });
-        docBody.addEventListener("mouseup", () => document.onmousemove = null);
+        docBody.onmouseup = () => docBody.onmousemove = null;
     }
 }
 
@@ -90,10 +93,8 @@ class World {
         
         this.props = props;
         this.textures = textures;
-        
+
         this.data = new Data("world", props, this.toData(seed));
-        
-        console.log(this.data);
     }
     
     toData(seed) {
@@ -113,14 +114,22 @@ class World {
         
         return data;
     }
+
+    render(ctx) {
+        ctx.fillStyle = "lightgreen";
+        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+        this.data.sprites.map((i) => {
+            i.render(ctx, this.props);
+        });
+    }
 }
 
 class Data {
     constructor(name, props, data) {
         this.name = name;
         this.data = data;
-        this.props = props;
-        
+
         this.sprites = this.data.map((i) => { return new Sprite(i.x, i.y, i.w, i.h, i.texture) });
 
         document.getElementById("save").onclick = () => this.save();
@@ -139,16 +148,9 @@ class Data {
         window.URL.revokeObjectURL(url);
     }
     
-    updateAndRender(ctx) {
-        ctx.fillStyle = "lightgreen";
-        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-        
+    render(ctx, x, y) {
         this.sprites.map((i) => {
-            /*i.update(
-                i.x * (i.w - 97) + i.y * (i.w - 97) + ctx.canvas.width / 2 + this.props.scrollX - (this.props.cols * i.w + this.data.length * i.w) / 2,
-                i.y * (i.h - 0) - i.x * (i.h - 0) + ctx.canvas.height / 2 + this.props.scrollY - this.props.rows / 2 * (i.h - 0) / 2
-            );*/
-            
+            i.update(x, y);
             i.render(ctx);
         });
     }
@@ -168,6 +170,8 @@ class CVS {
 
             scrollX: 0,
             scrollY: 0,
+
+            offset: 46,
         };
 
         this.canvas.width = window.innerWidth;
@@ -187,7 +191,7 @@ class CVS {
         this.props.scrollX += ((this.Input.mouse.x * 0.5 - this.props.scrollX) * 0.1);
         this.props.scrollY += ((this.Input.mouse.y * 0.5 - this.props.scrollY) * 0.1);
         
-        this.World.data.updateAndRender(this.ctx);
+        this.World.render(this.ctx);
 
         window.requestAnimationFrame(() => { this.Debugger.calcFPS(); this.update();});
     }

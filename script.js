@@ -1,6 +1,3 @@
-'use strict';
-const ctx = document.getElementById("c").getContext("2d");
-
 class Debugger {
     constructor() {
         this.mode = false;
@@ -36,13 +33,10 @@ class Debugger {
     }
 }
 
-class Tile {
-    constructor(cX, cY, w, h, texture) {
-        this.cX = cX;
-        this.cY = cY;
-
-        this.x = 0;
-        this.y = 0;
+class Sprite {
+    constructor(x, y, w, h, texture) {
+        this.x = x;
+        this.y = y;
 
         this.w = w;
         this.h = h;
@@ -50,16 +44,8 @@ class Tile {
         this.texture = texture;
     }
 
-    render(devMode) {
-        if(this.texture === 3) {
-            ctx.drawImage(textures[1], 0, 0, textures[1].width, textures[1].height, this.x, this.y, this.w, this.h);
-            if(devMode)
-                ctx.drawImage(textures[1], 256/2 - 27, (512/2)*3+3, 54, 54, this.cX * (this.w / 2), this.cY * (this.h / 4), this.w / 2, this.h / 4);
-        }
-        ctx.drawImage(textures[this.texture], 0, 0, textures[this.texture].width, textures[this.texture].height, this.x, this.y, this.w, this.h);
-        if(devMode) // ctx.drawImage(textures[this.texture], 0, 512 / 2, 256, 512 / 2, this.cX * (this.w / 2), this.cY * (this.h / 4), this.w / 2, this.h / 4);
-            ctx.drawImage(textures[this.texture], 256/2 - 27, (512/4)*3+3, 54, 54, this.cX * (this.w / 2), this.cY * (this.h / 4), this.w / 2, this.h / 4);
-
+    render(ctx) {
+        ctx.drawImage(this.texture, 0, 0, this.w, this.h, this.x, this.y, this.w, this.h);
     }
 
     update(x, y) {
@@ -78,12 +64,6 @@ class TextureManager {
     }
 }
 
-class SpriteHandler {
-    constructor() {
-        this.tiles = [];
-    }
-}
-
 class Input {
     constructor(docBody) {
         this.keys = [];
@@ -99,30 +79,55 @@ class Input {
     }
 }
 
+class World {
+    constructor(props, textures) {
+        let seed = [[1,1,1,1,1,1],
+                    [1,0,0,0,0,1],
+                    [1,0,0,0,0,1],
+                    [1,0,0,0,0,1],
+                    [1,0,0,0,0,1],
+                    [1,1,1,1,1,1]];
+        
+        this.props = props;
+        this.textures = textures;
+        
+        this.data = new Data("world", props, this.toData(seed));
+    }
+    
+    static toData(seed) {
+        let data = [];
+        
+        for(let x = 0; x < data.length; x++) {
+            for(let y = data.length - 1; y >= 0; y--) {
+                data.push({
+                        texture: this.textures[seed[x][y]],
+                        x: x,
+                        y: y,
+                        w: this.props.width / this.props.cols,
+                        h: this.props.height / this.props.rows,
+                });
+            }
+        }
+    }
+}
+
 class Data {
-    constructor(props) {
-        this.data = Data.validate([
-            [1,1,1,1,1,1],
-            [1,0,0,0,0,1],
-            [1,0,0,0,0,1],
-            [1,0,0,0,0,1],
-            [1,0,0,0,0,1],
-            [1,1,1,1,1,1],
-        ], props);
+    constructor(name, props, data) {
+        this.name = name;
+        this.data = data;
+        this.props = props;
+        
+        this.sprites = this.data.map((i) => { return new Sprite(i.x, i.y, i.w, i.h, i.texture) });
 
         document.getElementById("save").onclick = () => this.save();
     }
-
-    static validate(d, props) {
-        return d.length === props.cols ? d : "Error";
-    }
-//https://medium.com/@yyang0903/static-objects-static-methods-in-es6-1c026dbb8bb1
+    
     save() {
         let a = document.createElement("a");
         let url = URL.createObjectURL(new Blob([this.data.join("\n")], {type: "txt"}));
 
         a.href = url;
-        a.download = "data.txt";
+        a.download = this.name + ".txt";
 
         document.body.appendChild(a);
         a.click();
@@ -134,7 +139,7 @@ class Data {
 class CVS {
     constructor() {
         this.canvas = document.getElementById("canvas");
-        this.ctx = canvas.getContext("2d");
+        this.ctx = this.canvas.getContext("2d");
 
         this.props = {
             width: 1000,
@@ -152,16 +157,8 @@ class CVS {
 
         this.Input = new Input(document.body);
         this.Debugger = new Debugger();
-        this.Data = new Data(this.props);
-        this.SpriteHandler = new SpriteHandler();
-        this.TextureManager = new TextureManager();
-
-
-        for(let i = 0; i < this.data.length; i++) {
-            for(let j = this.data.length - 1; j >= 0; j--) {
-                this.tiles.push(new Tile(i, j, this.tileWidth, this.tileHeight, this.data[i][j]));
-            }
-        }
+        this.Textures = new TextureManager();
+        this.World = new World(this.Textures.textures);
 
         window.addEventListener("load", () => { this.update(); } );
     }

@@ -45,7 +45,7 @@ class Sprite {
     }
 
     render(ctx) {
-        ctx.drawImage(this.texture, 0, 0, this.w, this.h, this.x, this.y, this.w, this.h);
+        ctx.drawImage(this.texture, 0, 0, this.texture.width, this.texture.height, this.x, this.y, this.w, this.h);
     }
 
     update(x, y) {
@@ -67,7 +67,7 @@ class TextureManager {
 class Input {
     constructor(docBody) {
         this.keys = [];
-        this.mouse = [];
+        this.mouse = { x: 0, y: 0 };
 
         docBody.addEventListener("keyup", (e) => { this.keys[e.keyCode] = true; });
         docBody.addEventListener("keydown", (e) => { this.keys[e.keyCode] = false; });
@@ -92,13 +92,15 @@ class World {
         this.textures = textures;
         
         this.data = new Data("world", props, this.toData(seed));
+        
+        console.log(this.data);
     }
     
-    static toData(seed) {
+    toData(seed) {
         let data = [];
         
-        for(let x = 0; x < data.length; x++) {
-            for(let y = data.length - 1; y >= 0; y--) {
+        for(let x = 0; x < seed.length; x++) {
+            for(let y = seed.length - 1; y >= 0; y--) {
                 data.push({
                         texture: this.textures[seed[x][y]],
                         x: x,
@@ -108,6 +110,8 @@ class World {
                 });
             }
         }
+        
+        return data;
     }
 }
 
@@ -134,6 +138,20 @@ class Data {
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
     }
+    
+    updateAndRender(ctx) {
+        ctx.fillStyle = "lightgreen";
+        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+        
+        this.sprites.map((i) => {
+            /*i.update(
+                i.x * (i.w - 97) + i.y * (i.w - 97) + ctx.canvas.width / 2 + this.props.scrollX - (this.props.cols * i.w + this.data.length * i.w) / 2,
+                i.y * (i.h - 0) - i.x * (i.h - 0) + ctx.canvas.height / 2 + this.props.scrollY - this.props.rows / 2 * (i.h - 0) / 2
+            );*/
+            
+            i.render(ctx);
+        });
+    }
 }
 
 class CVS {
@@ -154,40 +172,34 @@ class CVS {
 
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
-
-        this.Input = new Input(document.body);
+        
         this.Debugger = new Debugger();
+        this.Input = new Input(document.body);
         this.Textures = new TextureManager();
-        this.World = new World(this.Textures.textures);
+        this.World = new World(this.props, this.Textures.textures);
 
         window.addEventListener("load", () => { this.update(); } );
     }
 
     update() {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.width);
+        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.width);
 
-        this.offsetX += ((this.mouse.x * 0.5 - this.offsetX) * 0.1);
-        this.offsetY += ((this.mouse.y * 0.5 - this.offsetY) * 0.1);
-
-        ctx.fillStyle = "lightgreen";
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-        for(var i = this.tiles.length - 1; i >= 0; i--) {
-            let t = this.tiles[i];
-
-            let x = t.cX * (t.w - 97) + t.cY * (t.w - 97) + ctx.canvas.width / 2 + this.offsetX - (this.data.length * t.w + this.data.length * t.w) / 2;
-            let y = t.cY * (t.h - this.offset) - t.cX * (t.h - this.offset) + ctx.canvas.height / 2 + this.offsetY - this.data.length / 2 * (t.h - this.offset) / 2;
-
-            this.tiles[i].update(x, y);
-            this.tiles[i].render(this.devMode);
-        }
+        this.props.scrollX += ((this.Input.mouse.x * 0.5 - this.props.scrollX) * 0.1);
+        this.props.scrollY += ((this.Input.mouse.y * 0.5 - this.props.scrollY) * 0.1);
+        
+        this.World.data.updateAndRender(this.ctx);
 
         window.requestAnimationFrame(() => { this.Debugger.calcFPS(); this.update();});
     }
 }
 
 (function() {
+    let requestAnimationFrame = window.requestAnimationFrame ||
+                                window.mozRequestAnimationFrame ||
+                                window.webkitRequestAnimationFrame ||
+                                window.msRequestAnimationFrame;
+                                
+    window.requestAnimationFrame = requestAnimationFrame;
+    
     let cvs = new CVS();
-})()
-
-// https://dev.to/washingtonsteven/playing-with-canvas-and-es6-classes
+})();

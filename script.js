@@ -34,12 +34,15 @@ class Debugger {
 }
 
 class Sprite {
-    constructor(x, y, w, h, texture) {
+    constructor(x, y, w, h, clipX, clipY, texture) {
         this.x = x;
         this.y = y;
 
         this.w = w;
         this.h = h;
+        
+        this.clipX = clipX;
+        this.clipY = clipY;
 
         this.texture = texture;
     }
@@ -48,7 +51,7 @@ class Sprite {
         let x = this.x * this.w / 2 + this.y * this.w / 2 + ctx.canvas.width / 2 + props.scrollX - (props.cols * this.w / 2 + props.cols * this.w / 2) / 2;
         let y = this.y * (this.h - props.offset) - this.x * (this.h - props.offset) + ctx.canvas.height / 2 + props.scrollY - props.rows / 2 * (this.h - props.offset) / 2;
 
-        ctx.drawImage(this.texture, 0, 0, this.texture.width, this.texture.height, x, y, this.w, this.h);
+        ctx.drawImage(this.texture, 0 + this.clipX / 2, 0 + this.clipY / 2, this.texture.width - this.clipX, this.texture.height - this.clipY, x, y, this.w, this.h);
     }
 
     update(x, y) {
@@ -58,12 +61,28 @@ class Sprite {
 }
 
 class TextureManager {
-    constructor() {
-        this.textures = ["iso1","iso2"].map((file) => {
-            let img = new Image();
-            img.src = "assets/" + file + ".png";
-            return img;
-        });
+    constructor(callback) {
+        this.textures = [];
+    }
+    
+    preloadImages(srcs) {
+        function loadImage(src) {
+            return new Promise(function(resolve, reject) {
+                var img = new Image();
+                img.onload = () => {
+                    resolve(img);
+                };
+                img.onerror = img.onabort = () => {
+                    reject(img);
+                };
+                img.src = src;
+            });
+        }
+        var promises = [];
+        for(var i = 0; i < srcs.length; i++) {
+            promises.push(loadImage("assets/" + srcs[i] + ".png"));
+        }
+        return Promise.all(promises);
     }
 }
 
@@ -106,7 +125,7 @@ class World {
                         texture: this.textures[seed[x][y]],
                         x: x,
                         y: y,
-                        w: this.props.width / this.props.cols,
+                        w: (this.props.width / this.props.cols) - this.props.clipX / this.textures[seed[x][y]].width,
                         h: this.props.height / this.props.rows,
                 });
             }
@@ -118,8 +137,9 @@ class World {
     render(ctx) {
         ctx.fillStyle = "lightgreen";
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-
-        this.data.sprites.map((i) => {
+        
+        // Make copy and reverse to render in right order
+        this.data.sprites.slice().reverse().map((i) => {
             i.render(ctx, this.props);
         });
     }
@@ -130,7 +150,7 @@ class Data {
         this.name = name;
         this.data = data;
 
-        this.sprites = this.data.map((i) => { return new Sprite(i.x, i.y, i.w, i.h, i.texture) });
+        this.sprites = this.data.map((i) => { return new Sprite(i.x, i.y, i.w, i.h, props.clipX, props.clipY, i.texture) });
 
         document.getElementById("save").onclick = () => this.save();
     }
@@ -162,8 +182,8 @@ class CVS {
         this.ctx = this.canvas.getContext("2d");
 
         this.props = {
-            width: 1000,
-            height: 1000,
+            width: 800,
+            height: 800,
 
             cols: 6,
             rows: 6,
@@ -171,15 +191,35 @@ class CVS {
             scrollX: 0,
             scrollY: 0,
 
-            offset: 46,
+            offset: 90,
+            clipX: 130,
+            clipY: 1,
         };
+        
+        this.running = false;
 
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
         
+        this.Textures = new TextureManager();
+        
+        this.Textures.preloadImages(["iso1","iso2"]).then(
+            (suc) => {
+                this.loaded(suc);
+            },
+            (err) => {
+                err.map((i) => { console.log(i + " failed to load.") });
+            }
+        );
+    }
+    
+    loaded(imgs) {
+        this.Textures.textures = imgs;
+        
+        console.log("Assets loaded successfully.");
+        
         this.Debugger = new Debugger();
         this.Input = new Input(document.body);
-        this.Textures = new TextureManager();
         this.World = new World(this.props, this.Textures.textures);
 
         window.addEventListener("load", () => { this.update(); } );

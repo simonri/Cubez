@@ -125,8 +125,8 @@ class World {
                         texture: this.textures[seed[x][y]],
                         x: x,
                         y: y,
-                        w: (this.props.width / this.props.cols) - this.props.clipX / this.textures[seed[x][y]].width,
-                        h: this.props.height / this.props.rows,
+                        w: (this.props.width / this.props.cols) * (1 - this.props.clipX / this.textures[seed[x][y]].width),
+                        h: (this.props.height / this.props.rows) * (1 - this.props.clipY / this.textures[seed[x][y]].height),
                 });
             }
         }
@@ -182,8 +182,8 @@ class CVS {
         this.ctx = this.canvas.getContext("2d");
 
         this.props = {
-            width: 800,
-            height: 800,
+            width: 1000,
+            height: 1000,
 
             cols: 6,
             rows: 6,
@@ -191,9 +191,9 @@ class CVS {
             scrollX: 0,
             scrollY: 0,
 
-            offset: 90,
-            clipX: 130,
-            clipY: 1,
+            offset: 121,
+            clipX: 180,
+            clipY: 34,
         };
         
         this.running = false;

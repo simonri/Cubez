@@ -51,7 +51,7 @@ class Sprite {
         let x = this.x * this.w / 2 + this.y * this.w / 2 + ctx.canvas.width / 2 + props.scrollX - (props.cols * this.w / 2 + props.cols * this.w / 2) / 2;
         let y = this.y * (this.h - props.offset) - this.x * (this.h - props.offset) + ctx.canvas.height / 2 + props.scrollY - props.rows / 2 * (this.h - props.offset) / 2;
 
-        ctx.drawImage(this.texture, 0 + this.clipX / 2, 0 + this.clipY / 2, this.texture.width - this.clipX, this.texture.height - this.clipY, x, y, this.w, this.h);
+        ctx.drawImage(this.texture, this.clipX / 2, this.clipY / 2, this.texture.width - this.clipX, this.texture.height - this.clipY, x, y, this.w, this.h);
     }
 
     update(x, y) {
@@ -103,12 +103,14 @@ class Input {
 
 class World {
     constructor(props, textures) {
-        let seed = [[1,1,1,1,1,1],
-                    [1,0,0,0,0,1],
-                    [1,0,0,0,0,1],
-                    [1,0,0,0,0,1],
-                    [1,0,0,0,0,1],
-                    [1,1,1,1,1,1]];
+        let seed = [[1,1,1,1,1,1,1,1],
+                    [1,0,0,0,0,0,0,1],
+                    [1,0,0,0,0,0,0,1],
+                    [1,0,0,0,0,0,0,1],
+                    [1,0,0,0,0,0,0,1],
+                    [1,0,0,0,0,0,0,1],
+                    [1,0,0,0,0,0,0,1],
+                    [1,1,1,1,1,1,1,1]];
         
         this.props = props;
         this.textures = textures;
@@ -157,10 +159,10 @@ class Data {
     
     save() {
         let a = document.createElement("a");
-        let url = URL.createObjectURL(new Blob([this.data.join("\n")], {type: "txt"}));
+        let url = URL.createObjectURL(new Blob([JSON.stringify(this.data)], {type: "json"}));
 
         a.href = url;
-        a.download = this.name + ".txt";
+        a.download = this.name + ".json";
 
         document.body.appendChild(a);
         a.click();
@@ -180,20 +182,22 @@ class CVS {
     constructor() {
         this.canvas = document.getElementById("canvas");
         this.ctx = this.canvas.getContext("2d");
+        
+        this.ctx.imageSmoothingEnabled = false;
 
         this.props = {
-            width: 1000,
-            height: 1000,
+            width: 900,
+            height: 900,
 
-            cols: 6,
-            rows: 6,
+            cols: 8,
+            rows: 8,
 
             scrollX: 0,
             scrollY: 0,
 
-            offset: 121,
-            clipX: 180,
-            clipY: 34,
+            offset: 67,
+            clipX: 0,
+            clipY: 16,
         };
         
         this.running = false;
@@ -203,7 +207,7 @@ class CVS {
         
         this.Textures = new TextureManager();
         
-        this.Textures.preloadImages(["iso1","iso2"]).then(
+        this.Textures.preloadImages(["road","water"]).then(
             (suc) => {
                 this.loaded(suc);
             },

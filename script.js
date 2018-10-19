@@ -6,7 +6,7 @@ class Debugger {
     document.getElementById("dev").onclick = () => (this.mode = !this.mode);
   }
 
-  /*if(this.mode) {
+  /* if(this.mode) {
     for(let i = 0; i < this.tiles.length; i++) {
         let t = this.tiles[i];
 
@@ -20,24 +20,21 @@ class Debugger {
         }
         }
         }
-    }*/
+    } */
 
   calcFPS() {
-    let now = performance.now();
+    const now = performance.now();
     while (this.FPSRecords.length > 0 && this.FPSRecords[0] <= now - 1000) {
       this.FPSRecords.shift();
     }
     this.FPSRecords.push(now);
 
-    document.getElementById("fps").innerHTML =
-      this.FPSRecords.length +
-      " - " +
-      Math.floor(
-        (performance.memory.usedJSHeapSize /
-          performance.memory.totalJSHeapSize) *
-          100
-      ) +
-      "%";
+    document.getElementById("fps").innerHTML = `${
+      this.FPSRecords.length
+    } - ${Math.floor(
+      (performance.memory.usedJSHeapSize / performance.memory.totalJSHeapSize) *
+        100
+    )}%`;
   }
 }
 
@@ -56,13 +53,13 @@ class Sprite {
   }
 
   render(ctx, props) {
-    let x =
+    const x =
       (this.x * this.w) / 2 +
       (this.y * this.w) / 2 +
       ctx.canvas.width / 2 +
       props.scrollX -
       ((props.cols * this.w) / 2 + (props.cols * this.w) / 2) / 2;
-    let y =
+    const y =
       this.y * (this.h - props.offset) -
       this.x * (this.h - props.offset) +
       ctx.canvas.height / 2 +
@@ -71,8 +68,8 @@ class Sprite {
 
     ctx.drawImage(
       this.texture,
-      0 + this.clipX / 2,
-      0 + this.clipY / 2,
+      this.clipX / 2,
+      this.clipY / 2,
       this.texture.width - this.clipX,
       this.texture.height - this.clipY,
       x,
@@ -89,14 +86,14 @@ class Sprite {
 }
 
 class TextureManager {
-  constructor(callback) {
+  constructor() {
     this.textures = [];
   }
 
   preloadImages(srcs) {
     function loadImage(src) {
-      return new Promise(function(resolve, reject) {
-        var img = new Image();
+      return new Promise((resolve, reject) => {
+        const img = new Image();
         img.onload = () => {
           resolve(img);
         };
@@ -106,9 +103,9 @@ class TextureManager {
         img.src = src;
       });
     }
-    var promises = [];
-    for (var i = 0; i < srcs.length; i++) {
-      promises.push(loadImage("assets/" + srcs[i] + ".png"));
+    const promises = [];
+    for (let i = 0; i < srcs.length; i++) {
+      promises.push(loadImage(`assets/${srcs[i]}.png`));
     }
     return Promise.all(promises);
   }
@@ -119,16 +116,17 @@ class Input {
     this.keys = [];
     this.mouse = { x: 0, y: 0 };
 
-    docBody.addEventListener("keyup", e => {
+    this.docBody = docBody;
+
+    this.docBody.addEventListener("keyup", e => {
       this.keys[e.keyCode] = true;
     });
-    docBody.addEventListener("keydown", e => {
+    this.docBody.addEventListener("keydown", e => {
       this.keys[e.keyCode] = false;
     });
 
-    docBody.addEventListener("mousedown", e => {
-      //game.clickTile(e);
-      docBody.onmousemove = e => {
+    this.docBody.addEventListener("mousedown", () => {
+      this.docBody.onmousemove = e => {
         this.mouse.x += e.movementX;
         this.mouse.y += e.movementY;
       };
@@ -139,7 +137,7 @@ class Input {
 
 class World {
   constructor(props, textures) {
-    let seed = [
+    const seed = [
       [1, 1, 1, 1, 1, 1],
       [1, 0, 0, 0, 0, 1],
       [1, 0, 0, 0, 0, 1],
@@ -155,14 +153,14 @@ class World {
   }
 
   toData(seed) {
-    let data = [];
+    const data = [];
 
     for (let x = 0; x < seed.length; x++) {
       for (let y = seed.length - 1; y >= 0; y--) {
         data.push({
           texture: this.textures[seed[x][y]],
-          x: x,
-          y: y,
+          x,
+          y,
           w:
             (this.props.width / this.props.cols) *
             (1 - this.props.clipX / this.textures[seed[x][y]].width),
@@ -195,29 +193,21 @@ class Data {
     this.name = name;
     this.data = data;
 
-    this.sprites = this.data.map(i => {
-      return new Sprite(
-        i.x,
-        i.y,
-        i.w,
-        i.h,
-        props.clipX,
-        props.clipY,
-        i.texture
-      );
-    });
+    this.sprites = this.data.map(
+      i => new Sprite(i.x, i.y, i.w, i.h, props.clipX, props.clipY, i.texture)
+    );
 
     document.getElementById("save").onclick = () => this.save();
   }
 
   save() {
-    let a = document.createElement("a");
-    let url = URL.createObjectURL(
+    const a = document.createElement("a");
+    const url = URL.createObjectURL(
       new Blob([this.data.join("\n")], { type: "txt" })
     );
 
     a.href = url;
-    a.download = this.name + ".txt";
+    a.download = `${this.name}.txt`;
 
     document.body.appendChild(a);
     a.click();
@@ -252,9 +242,6 @@ class CVS {
       clipX: 180,
       clipY: 34
     };
-
-    this.running = false;
-
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
 
@@ -265,9 +252,7 @@ class CVS {
         this.loaded(suc);
       },
       err => {
-        err.map(i => {
-          console.log(i + " failed to load.");
-        });
+        console.log(err.map(i => `${i} failed to load.`));
       }
     );
   }
@@ -302,7 +287,7 @@ class CVS {
 }
 
 (function() {
-  let requestAnimationFrame =
+  const requestAnimationFrame =
     window.requestAnimationFrame ||
     window.mozRequestAnimationFrame ||
     window.webkitRequestAnimationFrame ||
@@ -310,5 +295,5 @@ class CVS {
 
   window.requestAnimationFrame = requestAnimationFrame;
 
-  let cvs = new CVS();
+  new CVS();
 })();

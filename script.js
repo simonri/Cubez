@@ -3,7 +3,7 @@ class Debugger {
     this.mode = false;
     this.FPSRecords = [];
 
-    document.getElementById("dev").onclick = () => (this.mode = !this.mode);
+    document.getElementById('dev').onclick = () => (this.mode = !this.mode);
   }
 
   /* if(this.mode) {
@@ -29,11 +29,11 @@ class Debugger {
     }
     this.FPSRecords.push(now);
 
-    document.getElementById("fps").innerHTML = `${
+    document.getElementById('fps').innerHTML = `${
       this.FPSRecords.length
     } - ${Math.floor(
-      (performance.memory.usedJSHeapSize / performance.memory.totalJSHeapSize) *
-        100
+      (performance.memory.usedJSHeapSize / performance.memory.totalJSHeapSize)
+        * 100,
     )}%`;
   }
 }
@@ -53,18 +53,16 @@ class Sprite {
   }
 
   render(ctx, props) {
-    const x =
-      (this.x * this.w) / 2 +
-      (this.y * this.w) / 2 +
-      ctx.canvas.width / 2 +
-      props.scrollX -
-      ((props.cols * this.w) / 2 + (props.cols * this.w) / 2) / 2;
-    const y =
-      this.y * (this.h - props.offset) -
-      this.x * (this.h - props.offset) +
-      ctx.canvas.height / 2 +
-      props.scrollY -
-      ((props.rows / 2) * (this.h - props.offset)) / 2;
+    const x = (this.x * this.w) / 2
+      + (this.y * this.w) / 2
+      + ctx.canvas.width / 2
+      + props.scrollX
+      - ((props.cols * this.w) / 2 + (props.cols * this.w) / 2) / 2;
+    const y = this.y * (this.h - props.offset)
+      - this.x * (this.h - props.offset)
+      + ctx.canvas.height / 2
+      + props.scrollY
+      - ((props.rows / 2) * (this.h - props.offset)) / 2;
 
     ctx.drawImage(
       this.texture,
@@ -75,7 +73,7 @@ class Sprite {
       x,
       y,
       this.w,
-      this.h
+      this.h,
     );
   }
 
@@ -118,15 +116,15 @@ class Input {
 
     this.docBody = docBody;
 
-    this.docBody.addEventListener("keyup", e => {
+    this.docBody.addEventListener('keyup', (e) => {
       this.keys[e.keyCode] = true;
     });
-    this.docBody.addEventListener("keydown", e => {
+    this.docBody.addEventListener('keydown', (e) => {
       this.keys[e.keyCode] = false;
     });
 
-    this.docBody.addEventListener("mousedown", () => {
-      this.docBody.onmousemove = e => {
+    this.docBody.addEventListener('mousedown', () => {
+      this.docBody.onmousemove = (e) => {
         this.mouse.x += e.movementX;
         this.mouse.y += e.movementY;
       };
@@ -143,13 +141,13 @@ class World {
       [1, 0, 0, 0, 0, 1],
       [1, 0, 0, 0, 0, 1],
       [1, 0, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1]
+      [1, 1, 1, 1, 1, 1],
     ];
 
     this.props = props;
     this.textures = textures;
 
-    this.data = new Data("world", props, this.toData(seed));
+    this.data = new Data('world', props, this.toData(seed));
   }
 
   toData(seed) {
@@ -162,11 +160,11 @@ class World {
           x,
           y,
           w:
-            (this.props.width / this.props.cols) *
-            (1 - this.props.clipX / this.textures[seed[x][y]].width),
+            (this.props.width / this.props.cols)
+            * (1 - this.props.clipX / this.textures[seed[x][y]].width),
           h:
-            (this.props.height / this.props.rows) *
-            (1 - this.props.clipY / this.textures[seed[x][y]].height)
+            (this.props.height / this.props.rows)
+            * (1 - this.props.clipY / this.textures[seed[x][y]].height),
         });
       }
     }
@@ -175,14 +173,14 @@ class World {
   }
 
   render(ctx) {
-    ctx.fillStyle = "lightgreen";
+    ctx.fillStyle = 'lightgreen';
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
     // Make copy and reverse to render in right order
     this.data.sprites
       .slice()
       .reverse()
-      .map(i => {
+      .map((i) => {
         i.render(ctx, this.props);
       });
   }
@@ -194,16 +192,16 @@ class Data {
     this.data = data;
 
     this.sprites = this.data.map(
-      i => new Sprite(i.x, i.y, i.w, i.h, props.clipX, props.clipY, i.texture)
+      i => new Sprite(i.x, i.y, i.w, i.h, props.clipX, props.clipY, i.texture),
     );
 
-    document.getElementById("save").onclick = () => this.save();
+    document.getElementById('save').onclick = () => this.save();
   }
 
   save() {
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     const url = URL.createObjectURL(
-      new Blob([this.data.join("\n")], { type: "txt" })
+      new Blob([this.data.join('\n')], { type: 'txt' }),
     );
 
     a.href = url;
@@ -216,7 +214,7 @@ class Data {
   }
 
   render(ctx, x, y) {
-    this.sprites.map(i => {
+    this.sprites.map((i) => {
       i.update(x, y);
       i.render(ctx);
     });
@@ -225,8 +223,8 @@ class Data {
 
 class CVS {
   constructor() {
-    this.canvas = document.getElementById("canvas");
-    this.ctx = this.canvas.getContext("2d");
+    this.canvas = document.getElementById('canvas');
+    this.ctx = this.canvas.getContext('2d');
 
     this.props = {
       width: 1000,
@@ -240,33 +238,33 @@ class CVS {
 
       offset: 121,
       clipX: 180,
-      clipY: 34
+      clipY: 34,
     };
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
 
     this.Textures = new TextureManager();
 
-    this.Textures.preloadImages(["iso1", "iso2"]).then(
-      suc => {
+    this.Textures.preloadImages(['iso1', 'iso2']).then(
+      (suc) => {
         this.loaded(suc);
       },
-      err => {
+      (err) => {
         console.log(err.map(i => `${i} failed to load.`));
-      }
+      },
     );
   }
 
   loaded(imgs) {
     this.Textures.textures = imgs;
 
-    console.log("Assets loaded successfully.");
+    console.log('Assets loaded successfully.');
 
     this.Debugger = new Debugger();
     this.Input = new Input(document.body);
     this.World = new World(this.props, this.Textures.textures);
 
-    window.addEventListener("load", () => {
+    window.addEventListener('load', () => {
       this.update();
     });
   }
@@ -286,14 +284,13 @@ class CVS {
   }
 }
 
-(function() {
-  const requestAnimationFrame =
-    window.requestAnimationFrame ||
-    window.mozRequestAnimationFrame ||
-    window.webkitRequestAnimationFrame ||
-    window.msRequestAnimationFrame;
+(function () {
+  const requestAnimationFrame = window.requestAnimationFrame
+    || window.mozRequestAnimationFrame
+    || window.webkitRequestAnimationFrame
+    || window.msRequestAnimationFrame;
 
   window.requestAnimationFrame = requestAnimationFrame;
 
   new CVS();
-})();
+}());

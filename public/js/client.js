@@ -8,4 +8,11 @@ $(document).ready(function() {
   var game = Game.create(socket, canvas);
   game.init();
   game.animate();
+
+  $("input").keyup(function(e) {
+    if(e.keyCode == 13) {
+      socket.emit("chat-message", $("input").val());
+      $("input").val("");
+    }
+  });
 })

@@ -34,6 +34,10 @@ io.on("connection", (socket) => {
     game.updatePlayerOnInput(socket.id, data);
   });
 
+  socket.on("chat-message", (data) => {
+    game.broadcastChatMessage(socket.id, data);
+  });
+
   socket.on("disconnect", () => {
     game.removePlayer(socket.id);
   });
@@ -50,3 +54,5 @@ server.listen(PORT, function() {
     console.log("Dev mode enabled");
   }
 });
+
+// https://github.com/omgimanerd/game-framework

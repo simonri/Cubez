@@ -9,7 +9,7 @@ function Game(socket, drawing) {
 
 Game.create = function(socket, canvasElement) {
   canvasElement.width = 800;
-  canvasElement.hright = 600;
+  canvasElement.height = 600;
   canvasElement.style.border = "1px solid black";
   var canvasContext = canvasElement.getContext("2d");
 
@@ -38,6 +38,10 @@ Game.prototype.stopAnimation = function() {
 Game.prototype.reciveGameState = function(state) {
   this.selfPlayer = state["self"];
   this.otherPlayers = state["players"];
+};
+
+Game.prototype.addNewChatMessage = function(message) {
+  $(".chat").html($(".chat").html() + "\n" + message);
 };
 
 Game.prototype.update = function() {

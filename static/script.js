@@ -1,17 +1,3 @@
-// Test commit
-
-const http = require('http');
-const hostname = '127.0.0.1';
-const port = 3000;
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World\n');
-});
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
-
 class Debugger {
   constructor() {
     this.mode = false;
@@ -20,22 +6,6 @@ class Debugger {
     document.getElementById("dev").onclick = () => (this.mode = !this.mode);
   }
 
-  /* if(this.mode) {
-    for(let i = 0; i < this.tiles.length; i++) {
-        let t = this.tiles[i];
-
-        let x = t.cX * (t.w / 2);
-        let y = t.cY * (t.h / 4);
-
-        if (e.clientX > x && e.clientX < x + t.w / 2) {
-        if ((e.clientY > y && e.clientY < y + t.h / 4)) {
-        this.data[t.cY][t.cX] = (t.texture < textures.length - 1) ? t.texture + 1 : 0;
-        this.tiles[i].texture = (t.texture < textures.length - 1) ? t.texture + 1 : 0;
-        }
-        }
-        }
-    } */
-
   calcFPS() {
     const now = performance.now();
     while (this.FPSRecords.length > 0 && this.FPSRecords[0] <= now - 1000) {
@@ -43,15 +13,7 @@ class Debugger {
     }
     this.FPSRecords.push(now);
 
-    document.getElementById("fps").innerHTML =
-      this.FPSRecords.length +
-      " - " +
-      Math.floor(
-        (performance.memory.usedJSHeapSize /
-          performance.memory.totalJSHeapSize) *
-          100
-      ) +
-      "%";
+    document.getElementById("fps").innerHTML = this.FPSRecords.length;
   }
 }
 
@@ -122,7 +84,9 @@ class TextureManager {
     }
     const promises = [];
     for (let i = 0; i < srcs.length; i++) {
-      promises.push(loadImage(`assets/${srcs[i]}.png`));
+      promises.push(loadImage("static/assets/" + srcs[i] + ".png"));
+
+      console.log("assets/" + srcs[i] + ".png");
     }
     return Promise.all(promises);
   }
@@ -136,10 +100,10 @@ class Input {
     this.docBody = docBody;
 
     this.docBody.addEventListener("keyup", e => {
-      this.keys[e.keyCode] = true;
+      this.keys[e.key] = true;
     });
     this.docBody.addEventListener("keydown", e => {
-      this.keys[e.keyCode] = false;
+      this.keys[e.key] = false;
     });
 
     this.docBody.addEventListener("mousedown", () => {
@@ -148,7 +112,7 @@ class Input {
         this.mouse.y += e.movementY;
       };
     });
-    docBody.onmouseup = () => (docBody.onmousemove = null);
+    this.docBody.onmouseup = () => (this.docBody.onmousemove = null);
   }
 }
 
@@ -224,7 +188,7 @@ class Data {
     );
 
     a.href = url;
-    a.download = this.name + ".txt";
+    a.download = `${this.name}.txt`;
 
     document.body.appendChild(a);
     a.click();
@@ -244,6 +208,10 @@ class CVS {
   constructor() {
     this.canvas = document.getElementById("canvas");
     this.ctx = this.canvas.getContext("2d");
+
+
+    this.ctx.rect(10, 10, 100, 100);
+    this.ctx.fill();
 
     this.props = {
       width: 1000,
@@ -269,7 +237,7 @@ class CVS {
         this.loaded(suc);
       },
       err => {
-        console.log(err.map(i => `${i} failed to load.`));
+        console.log(err.map(i => i + "failed to load."));
       }
     );
   }
@@ -304,7 +272,12 @@ class CVS {
 }
 
 (function() {
-  let requestAnimationFrame =
+  const socket = io();
+  socket.on("message", function(data) {
+    console.log(data);
+  });
+
+  const requestAnimationFrame =
     window.requestAnimationFrame ||
     window.mozRequestAnimationFrame ||
     window.webkitRequestAnimationFrame ||
@@ -313,12 +286,4 @@ class CVS {
   window.requestAnimationFrame = requestAnimationFrame;
 
   let cvs = new CVS();
-
-  const express = require("express");
-  const router = express.Router();
-  router.get("/", (req, res) => {
-    res.send({ response: "I am alive" }).status(200);
-  });
-  module.exports = router;
-  new CVS();
 })();

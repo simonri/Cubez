@@ -3,8 +3,12 @@ doctype html
 html
     head
         title Javascript Game!
-    body
-        canvas(id="canvas" width="800px" height="600px")
+    body(style="background: #263238; color: white;")
+        canvas(id="canvas" width="800px" height="600px" style="position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);")
+        div(id="ping" style="position: fixed; right: 10px; top: 10px;").
+            0
+        div(id="save" style="position: fixed; right: 10px; bottom: 10px;").
+            Save
         input(type="text")
         p(class="chat").
     script(src='/socket.io/socket.io.js')

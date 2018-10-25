@@ -1,5 +1,5 @@
 const DEV_MODE = process.argv.indexOf("--dev") != -1;
-const FPS = 60;
+const FPS = 1000 / 60;
 const PORT = process.env.PORT || 5000;
 
 const express = require("express");
@@ -39,6 +39,10 @@ io.on("connection", (socket) => {
     console.log("Chat message: " + data);
   });
 
+  socket.on("latency", function (startTime, cb) {
+    cb(startTime);
+  }); 
+  
   socket.on("disconnect", () => {
     game.removePlayer(socket.id);
   });
@@ -47,7 +51,7 @@ io.on("connection", (socket) => {
 setInterval(() => {
   game.update();
   game.sendState();
-}, 100 / FPS);
+}, FPS);
 
 server.listen(PORT, function() {
   console.log("Starting server on port " + PORT);

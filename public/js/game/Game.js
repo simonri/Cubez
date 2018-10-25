@@ -1,3 +1,5 @@
+/*eslint-env jquery */
+/*globals Util Drawing Input*/
 function Game(socket, drawing) {
   this.socket = socket;
   this.drawing = drawing;
@@ -5,12 +7,14 @@ function Game(socket, drawing) {
   this.selfPlayer = null;
   this.otherPlayers = [];
   this.animationFrameId = 0;
+  
+  this.targetPing = 0;
+  this.ping = 0;
 }
 
 Game.create = function(socket, canvasElement) {
   canvasElement.width = 800;
   canvasElement.height = 600;
-  canvasElement.style.border = "1px solid black";
   var canvasContext = canvasElement.getContext("2d");
 
   var drawing = Drawing.create(canvasContext);
@@ -26,6 +30,12 @@ Game.prototype.init = function() {
   this.socket.on("chat-message", function(data) {
       context.addChatMessage(data);
   });
+  
+  window.setInterval(function() {
+    context.socket.emit('latency', Date.now(), function(startTime) {
+      context.targetPing = Date.now() - startTime;
+    });
+  }, 1000);
 };
 
 Game.prototype.animate = function() {
@@ -50,14 +60,20 @@ Game.prototype.addChatMessage = function(message) {
 };
 
 Game.prototype.update = function() {
+  this.ping += (this.targetPing - this.ping) * 0.06;
+  
+  $("#ping").html(Math.floor(this.ping));
   if (this.selfPlayer) {
+    let timestamp = (new Date()).getTime();
+    
     this.socket.emit("player-action", {
       keyboardState: {
         left: Input.LEFT,
         right: Input.RIGHT,
         up: Input.UP,
-        down: Input.DOWN
-      }
+        down: Input.DOWN,
+      },
+      timestamp: timestamp
     });
     this.draw();
   }

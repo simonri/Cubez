@@ -7,7 +7,7 @@ const http = require("http");
 const morgan = require("morgan");
 const socketIO = require("socket.io");
 
-const Game = require("./lib/Game");
+const Game = require("./lib/ServerGame");
 
 var app = express();
 var server = http.Server(app);

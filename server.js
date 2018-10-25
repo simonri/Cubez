@@ -36,6 +36,7 @@ io.on("connection", (socket) => {
 
   socket.on("chat-message", (data) => {
     game.broadcastChatMessage(socket.id, data);
+    console.log("Chat message: " + data);
   });
 
   socket.on("disconnect", () => {
@@ -46,7 +47,7 @@ io.on("connection", (socket) => {
 setInterval(() => {
   game.update();
   game.sendState();
-}, 1000 / FPS);
+}, 100 / FPS);
 
 server.listen(PORT, function() {
   console.log("Starting server on port " + PORT);

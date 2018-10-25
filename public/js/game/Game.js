@@ -23,6 +23,9 @@ Game.prototype.init = function() {
     context.reciveGameState(data);
   });
   this.socket.emit("player-join");
+  this.socket.on("chat-message", function(data) {
+      context.addChatMessage(data);
+  });
 };
 
 Game.prototype.animate = function() {
@@ -40,8 +43,10 @@ Game.prototype.reciveGameState = function(state) {
   this.otherPlayers = state["players"];
 };
 
-Game.prototype.addNewChatMessage = function(message) {
-  $(".chat").html($(".chat").html() + "\n" + message);
+Game.prototype.addChatMessage = function(message) {
+    console.log("Chat message: " + message);
+    
+    $(".chat").html($(".chat").html() + "\n" + message);
 };
 
 Game.prototype.update = function() {

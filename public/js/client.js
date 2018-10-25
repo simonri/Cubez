@@ -11,8 +11,9 @@ $(document).ready(function() {
 
   $("input").keyup(function(e) {
     if(e.keyCode == 13) {
-      socket.emit("chat-message", $("input").val());
-      $("input").val("");
+        console.log("Sending chat message...");
+        socket.emit("chat-message", $("input").val());
+        $("input").val("");
     }
   });
-})
+});

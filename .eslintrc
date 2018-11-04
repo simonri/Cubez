@@ -1,7 +1,11 @@
 {
+  "parserOptions": {
+    "ecmaVersion": 2018
+  },
   "extends": "airbnb-base",
   "env": {
     "browser": true,
+    "es6": true,
     "node": true,
     "jasmine": true
   }

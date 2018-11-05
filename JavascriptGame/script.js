@@ -5,7 +5,9 @@ class Debugger {
     this.mode = false;
     this.FPSRecords = [];
 
-    document.getElementById("dev").onclick = function() { this.mode = !this.mode };
+    document.getElementById("dev").onclick = function() {
+      this.mode = !this.mode;
+    };
   }
 
   calcFPS() {
@@ -23,7 +25,7 @@ class Sprite {
   constructor(posX, posY, width, height, clipX, clipY, texture) {
     this.posX = posX;
     this.posY = posY;
-    
+
     this.width = width;
     this.height = height;
 
@@ -39,15 +41,13 @@ class Sprite {
       (this.posY * this.width) / 2 +
       ctx.canvas.width / 2 +
       props.scrollX -
-      ((props.cols * this.width) / 2 + (props.cols * this.width ) / 2) / 2;
+      ((props.cols * this.width) / 2 + (props.cols * this.width) / 2) / 2;
     let posY =
       this.posY * (this.height - props.offset) -
       this.posX * (this.height - props.offset) +
       ctx.canvas.height / 2 +
       props.scrollY -
       ((props.rows / 2) * (this.height - props.offset)) / 2;
-      
-    //console.log(this.width);
 
     ctx.drawImage(
       this.texture,
@@ -90,7 +90,7 @@ class TextureManager {
     for (let i = 0; i < srcs.length; i++) {
       promises.push(loadImage("assets/voxelTile_" + srcs[i] + ".png"));
 
-      console.log("assets/voxelTile_" + srcs[i] + ".png");
+      console.log("Loaded: voxelTile_" + srcs[i] + ".png");
     }
     return Promise.all(promises);
   }
@@ -126,16 +126,31 @@ class Data {
     this.data = data;
 
     this.sprites = this.data.map(
-      i => new Sprite(i.posX, i.posY, i.width, i.height, props.clipX, props.clipY, i.texture)
+      i =>
+        new Sprite(
+          i.posX,
+          i.posY,
+          i.width,
+          i.height,
+          props.clipX,
+          props.clipY,
+          i.texture
+        )
     );
 
     document.getElementById("save").onclick = () => this.save();
   }
 
   save() {
-    const anchor = document.createElement("a");
-    const url = URL.createObjectURL(
-      new Blob([this.data.join("\n")], { type: "txt" })
+    let anchor = document.createElement("a");
+
+    let jsonSave = {
+      world: this.dataToStr(this.data),
+      background: "green"
+    };
+
+    let url = URL.createObjectURL(
+      new Blob([JSON.stringify(jsonSave)], { type: "txt" })
     );
 
     anchor.href = url;
@@ -152,6 +167,20 @@ class Data {
       sprite.update(posX, posY);
       sprite.render(ctx);
     });
+  }
+
+  dataToStr(data) {
+    return data
+      .map(
+        i =>
+          ("0" + i.posX).slice(-2) +
+          ("0" + i.posY).slice(-2) +
+          i.texture.src
+            .split("/")
+            [i.texture.src.split("/").length - 1].split("_")[1]
+            .split(".")[0]
+      )
+      .join("");
   }
 }
 
@@ -181,10 +210,8 @@ class World {
           texture: this.textures[seed[posX][posY]],
           posX,
           posY,
-          width:
-            (this.props.width / this.props.cols) * (111 / 128),
-          height:
-            (this.props.height / this.props.rows)
+          width: (this.props.width / this.props.cols) * (111 / 128),
+          height: this.props.height / this.props.rows
         });
       }
     }
@@ -193,7 +220,7 @@ class World {
   }
 
   render(ctx) {
-    ctx.fillStyle = "lightgreen";
+    ctx.fillStyle = "#90c0ff";
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
     this.data.sprites
@@ -209,7 +236,6 @@ class CVS {
   constructor() {
     this.canvas = document.getElementById("canvas");
     this.ctx = this.canvas.getContext("2d");
-
 
     this.ctx.rect(10, 10, 100, 100);
     this.ctx.fill();
@@ -246,7 +272,7 @@ class CVS {
   loaded(imgs) {
     this.Textures.textures = imgs;
 
-    console.log("Assets loaded successfully.");
+    console.log("All assets loaded successfully.");
 
     this.Debugger = new Debugger();
     this.Input = new Input(document.body);

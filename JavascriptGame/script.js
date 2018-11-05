@@ -84,9 +84,9 @@ class TextureManager {
     }
     const promises = [];
     for (let i = 0; i < srcs.length; i++) {
-      promises.push(loadImage("assets/" + srcs[i] + ".png"));
+      promises.push(loadImage("assets/voxelTile_" + srcs[i] + ".png"));
 
-      console.log("assets/" + srcs[i] + ".png");
+      console.log("assets/voxelTile_" + srcs[i] + ".png");
     }
     return Promise.all(promises);
   }
@@ -143,11 +143,9 @@ class World {
           x,
           y,
           w:
-            (this.props.width / this.props.cols) *
-            (1 - this.props.clipX / this.textures[seed[x][y]].width),
+            (this.props.width / this.props.cols) * (111 / 128),
           h:
-            (this.props.height / this.props.rows) *
-            (1 - this.props.clipY / this.textures[seed[x][y]].height)
+            (this.props.height / this.props.rows)
         });
       }
     }
@@ -159,7 +157,6 @@ class World {
     ctx.fillStyle = "lightgreen";
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-    // Make copy and reverse to render in right order
     this.data.sprites
       .slice()
       .reverse()
@@ -223,21 +220,21 @@ class CVS {
       scrollX: 0,
       scrollY: 0,
 
-      offset: 121,
-      clipX: 180,
-      clipY: 34
+      offset: 125,
+      clipX: 0,
+      clipY: 0
     };
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
 
     this.Textures = new TextureManager();
 
-    this.Textures.preloadImages(["iso1", "iso2"]).then(
+    this.Textures.preloadImages(["47", "41"]).then(
       suc => {
         this.loaded(suc);
       },
       err => {
-        console.log(err.map(i => i + "failed to load."));
+        console.log("Failed to load image." + err);
       }
     );
   }

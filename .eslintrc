@@ -5,6 +5,7 @@
     "node": true,
     "es6": true,
   },
+  
   "parserOptions": {
       "sourceType": "module"
   },
@@ -16,5 +17,8 @@
     "modules": true,
     "spread": true,
     "globalReturn": true,
+  },
+  rules: {
+    "no-console": "off",
   }
 }

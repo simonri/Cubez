@@ -1,9 +1,11 @@
+"use strict";
+
 class Debugger {
   constructor() {
     this.mode = false;
     this.FPSRecords = [];
 
-    document.getElementById("dev").onclick = () => (this.mode = !this.mode);
+    document.getElementById("dev").onclick = function() { this.mode = !this.mode };
   }
 
   calcFPS() {
@@ -18,12 +20,12 @@ class Debugger {
 }
 
 class Sprite {
-  constructor(x, y, w, h, clipX, clipY, texture) {
-    this.x = x;
-    this.y = y;
+  constructor(posX, posY, w, h, clipX, clipY, texture) {
+    this.posX = posX;
+    this.posY = posY;
 
-    this.w = w;
-    this.h = h;
+    this.width = w;
+    this.height = h;
 
     this.clipX = clipX;
     this.clipY = clipY;
@@ -32,18 +34,18 @@ class Sprite {
   }
 
   render(ctx, props) {
-    const x =
-      (this.x * this.w) / 2 +
-      (this.y * this.w) / 2 +
+    const posX =
+      (this.posX * this.width) / 2 +
+      (this.posY * this.width) / 2 +
       ctx.canvas.width / 2 +
       props.scrollX -
-      ((props.cols * this.w) / 2 + (props.cols * this.w) / 2) / 2;
-    const y =
-      this.y * (this.h - props.offset) -
-      this.x * (this.h - props.offset) +
+      ((props.cols * this.width) / 2 + (props.cols * this.width ) / 2) / 2;
+    const posY =
+      this.posY * (this.height - props.offset) -
+      this.posX * (this.height - props.offset) +
       ctx.canvas.height / 2 +
       props.scrollY -
-      ((props.rows / 2) * (this.h - props.offset)) / 2;
+      ((props.rows / 2) * (this.height - props.offset)) / 2;
 
     ctx.drawImage(
       this.texture,
@@ -51,16 +53,16 @@ class Sprite {
       this.clipY / 2,
       this.texture.width - this.clipX,
       this.texture.height - this.clipY,
-      x,
-      y,
-      this.w,
-      this.h
+      posX,
+      posY,
+      this.width,
+      this.height
     );
   }
 
-  update(x, y) {
-    this.x = x;
-    this.y = y;
+  update(posX, posY) {
+    this.posX = posX;
+    this.posY = posY;
   }
 }
 
@@ -99,20 +101,55 @@ class Input {
 
     this.docBody = docBody;
 
-    this.docBody.addEventListener("keyup", e => {
-      this.keys[e.key] = true;
+    this.docBody.addEventListener("keyup", event => {
+      this.keys[event.key] = true;
     });
-    this.docBody.addEventListener("keydown", e => {
-      this.keys[e.key] = false;
+    this.docBody.addEventListener("keydown", event => {
+      this.keys[event.key] = false;
     });
 
     this.docBody.addEventListener("mousedown", () => {
-      this.docBody.onmousemove = e => {
-        this.mouse.x += e.movementX;
-        this.mouse.y += e.movementY;
+      this.docBody.onmousemove = event => {
+        this.mouse.x += event.movementX;
+        this.mouse.y += event.movementY;
       };
     });
     this.docBody.onmouseup = () => (this.docBody.onmousemove = null);
+  }
+}
+
+class Data {
+  constructor(name, props, data) {
+    this.name = name;
+    this.data = data;
+
+    this.sprites = this.data.map(
+      i => new Sprite(i.x, i.y, i.w, i.h, props.clipX, props.clipY, i.texture)
+    );
+
+    document.getElementById("save").onclick = () => this.save();
+  }
+
+  save() {
+    const anchor = document.createElement("a");
+    const url = URL.createObjectURL(
+      new Blob([this.data.join("\n")], { type: "txt" })
+    );
+
+    anchor.href = url;
+    anchor.download = `${this.name}.txt`;
+
+    document.body.appendChild(a);
+    anchor.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }
+
+  render(ctx, x, y) {
+    this.sprites.map(i => {
+      i.update(x, y);
+      i.render(ctx);
+    });
   }
 }
 
@@ -163,41 +200,6 @@ class World {
       .map(i => {
         i.render(ctx, this.props);
       });
-  }
-}
-
-class Data {
-  constructor(name, props, data) {
-    this.name = name;
-    this.data = data;
-
-    this.sprites = this.data.map(
-      i => new Sprite(i.x, i.y, i.w, i.h, props.clipX, props.clipY, i.texture)
-    );
-
-    document.getElementById("save").onclick = () => this.save();
-  }
-
-  save() {
-    const a = document.createElement("a");
-    const url = URL.createObjectURL(
-      new Blob([this.data.join("\n")], { type: "txt" })
-    );
-
-    a.href = url;
-    a.download = `${this.name}.txt`;
-
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-  }
-
-  render(ctx, x, y) {
-    this.sprites.map(i => {
-      i.update(x, y);
-      i.render(ctx);
-    });
   }
 }
 
@@ -277,5 +279,5 @@ class CVS {
 
   window.requestAnimationFrame = requestAnimationFrame;
 
-  let cvs = new CVS();
+  new CVS();
 })();

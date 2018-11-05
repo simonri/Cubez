@@ -20,12 +20,12 @@ class Debugger {
 }
 
 class Sprite {
-  constructor(posX, posY, w, h, clipX, clipY, texture) {
+  constructor(posX, posY, width, height, clipX, clipY, texture) {
     this.posX = posX;
     this.posY = posY;
-
-    this.width = w;
-    this.height = h;
+    
+    this.width = width;
+    this.height = height;
 
     this.clipX = clipX;
     this.clipY = clipY;
@@ -34,18 +34,20 @@ class Sprite {
   }
 
   render(ctx, props) {
-    const posX =
+    let posX =
       (this.posX * this.width) / 2 +
       (this.posY * this.width) / 2 +
       ctx.canvas.width / 2 +
       props.scrollX -
       ((props.cols * this.width) / 2 + (props.cols * this.width ) / 2) / 2;
-    const posY =
+    let posY =
       this.posY * (this.height - props.offset) -
       this.posX * (this.height - props.offset) +
       ctx.canvas.height / 2 +
       props.scrollY -
       ((props.rows / 2) * (this.height - props.offset)) / 2;
+      
+    //console.log(this.width);
 
     ctx.drawImage(
       this.texture,
@@ -124,7 +126,7 @@ class Data {
     this.data = data;
 
     this.sprites = this.data.map(
-      i => new Sprite(i.x, i.y, i.w, i.h, props.clipX, props.clipY, i.texture)
+      i => new Sprite(i.posX, i.posY, i.width, i.height, props.clipX, props.clipY, i.texture)
     );
 
     document.getElementById("save").onclick = () => this.save();
@@ -139,16 +141,16 @@ class Data {
     anchor.href = url;
     anchor.download = `${this.name}.txt`;
 
-    document.body.appendChild(a);
+    document.body.appendChild(anchor);
     anchor.click();
-    document.body.removeChild(a);
+    document.body.removeChild(anchor);
     window.URL.revokeObjectURL(url);
   }
 
-  render(ctx, x, y) {
-    this.sprites.map(i => {
-      i.update(x, y);
-      i.render(ctx);
+  render(ctx, posX, posY) {
+    this.sprites.map(sprite => {
+      sprite.update(posX, posY);
+      sprite.render(ctx);
     });
   }
 }
@@ -173,15 +175,15 @@ class World {
   toData(seed) {
     const data = [];
 
-    for (let x = 0; x < seed.length; x++) {
-      for (let y = seed.length - 1; y >= 0; y--) {
+    for (let posX = 0; posX < seed.length; posX++) {
+      for (let posY = seed.length - 1; posY >= 0; posY--) {
         data.push({
-          texture: this.textures[seed[x][y]],
-          x,
-          y,
-          w:
+          texture: this.textures[seed[posX][posY]],
+          posX,
+          posY,
+          width:
             (this.props.width / this.props.cols) * (111 / 128),
-          h:
+          height:
             (this.props.height / this.props.rows)
         });
       }

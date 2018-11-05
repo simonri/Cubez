@@ -84,7 +84,7 @@ class TextureManager {
     }
     const promises = [];
     for (let i = 0; i < srcs.length; i++) {
-      promises.push(loadImage("static/assets/" + srcs[i] + ".png"));
+      promises.push(loadImage("assets/" + srcs[i] + ".png"));
 
       console.log("assets/" + srcs[i] + ".png");
     }
@@ -272,11 +272,6 @@ class CVS {
 }
 
 (function() {
-  const socket = io();
-  socket.on("message", function(data) {
-    console.log(data);
-  });
-
   const requestAnimationFrame =
     window.requestAnimationFrame ||
     window.mozRequestAnimationFrame ||

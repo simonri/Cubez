@@ -1,43 +1,72 @@
-function World(props) {
+class World {
+  constructor() {
     const seed = [
-            [1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1],
-            [1, 0, 0, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1]
-        ];
-        
-    this.props = props;
-    this.data = new Data("world", props, this.toData(seed));
-}
+      [1, 1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1, 1]
+    ];
 
-World.prototype.toData = function(seed) {
-    const data = [];
+    this.entities = this.genEntities(seed);
     
-    for (let posX = 0; posX < seed.length; posX++) {
-        for (let posY = seed.length - 1; posY >= 0; posY--) {
-            data.push({
-                texture: resources.get(seed[posX][posY]),
-                posX,
-                posY,
-                width: (this.props.width / this.props.cols) * (111 / 128),
-                height: this.props.height / this.props.rows
-            });
-        }
+    document.getElementById("save").onclick = () => this.save();
+  }
+
+  genEntities(seed) {
+    const entities = [];
+
+    for (let x = 0; x < seed.length; x++) {
+      for (let y = seed.length - 1; y >= 0; y--) {
+        entities.push({
+          pos: [x, y],
+          sprite: new Sprite(resources.get(seed[x][y]), [x, y], [111, 128])
+        });
+      }
     }
+
+    return entities;
+  }
+
+  updateEntities(dt) {
+    props.scrollX += (input.mouse.x * 0.5 - props.scrollX) * 0.1; // * dt
+    props.scrollY += (input.mouse.y * 0.5 - props.scrollY) * 0.1; // * dt
+  }
+
+  renderEntities() {
+    for (let i = this.entities.length - 1; i >= 0; i--) {
+      this.renderEntity(this.entities[i]);
+    }
+  }
+
+  renderEntity(entity) {
+    entity.sprite.render();
+  }
+  
+  genTextFile() {
+    var data = this.entities.map(function(i) {
+      let tex = i.sprite.texture,
+          x = i.pos[0],
+          y = i.pos[1];
+      
+      return (("0" + x).slice(-2) + ("0" + y).slice(-2) + tex.src.split("/")[tex.src.split("/").length - 1].split("_")[1].split(".")[0]);
+    }).join("");
     
-    return data;
-};
+    return URL.createObjectURL(new Blob([data], { type: "txt" }));
+  }
+  
+  save() {
+    let anchor = document.createElement("a");
     
-World.prototype.render = function(ctx) {
-    ctx.fillStyle = "#90c0ff";
-    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-    
-    this.data.sprites
-        .slice()
-        .reverse()
-        .map(i => {
-        i.render(ctx, this.props);
-    });
-};
+    let url = this.genTextFile();
+  
+    anchor.href = url;
+    anchor.download = "world.txt";
+  
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+    window.URL.revokeObjectURL(url);
+  }
+}

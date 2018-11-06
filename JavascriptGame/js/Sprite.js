@@ -1,45 +1,31 @@
-function Sprite(posX, posY, width, height, clipX, clipY, texture) {
-    this.posX = posX;
-    this.posY = posY;
-    
-    this.width = width;
-    this.height = height;
-    
-    this.clipX = clipX;
-    this.clipY = clipY;
-    
-    this.texture = texture;
-}
+class Sprite {
+  constructor(texture, pos, size) {
+    this.pos = pos;
+    this.size = size;
 
-Sprite.prototype.render = function(ctx, props) {
-    let posX =
-        (this.posX * this.width) / 2 +
-        (this.posY * this.width) / 2 +
-        ctx.canvas.width / 2 +
-        props.scrollX -
-        ((props.cols * this.width) / 2 + (props.cols * this.width) / 2) / 2;
-        
-    let posY =
-        this.posY * (this.height - props.offset) -
-        this.posX * (this.height - props.offset) +
-        ctx.canvas.height / 2 +
-        props.scrollY -
-        ((props.rows / 2) * (this.height - props.offset)) / 2;
+    this.texture = texture;
+  }
+
+  render() {
+    var pos = Utils.toIso(this.pos[0], this.pos[1], this.size[0], this.size[1]);
+    
+    pos[0] += props.scrollX;
+    pos[1] += props.scrollY;
     
     ctx.drawImage(
-        this.texture,
-        this.clipX / 2,
-        this.clipY / 2,
-        this.texture.width - this.clipX,
-        this.texture.height - this.clipY,
-        posX,
-        posY,
-        this.width,
-        this.height
+      this.texture,
+      0,
+      0,
+      this.size[0],
+      this.size[1],
+      pos[0],
+      pos[1],
+      this.texture.width,
+      this.texture.height
     );
-};
+  }
 
-Sprite.prototype.update = function(posX, posY) {
-    this.posX = posX;
-    this.posY = posY;
-};
+  update(pos) {
+    this.pos = pos;
+  }
+}

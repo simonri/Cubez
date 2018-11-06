@@ -1,0 +1,18 @@
+function Debugger() {
+   this.mode = false;
+   this.FPSRecords = [];
+   
+   document.getElementById("dev").onclick = function() {
+      this.mode = !this.mode;
+   };
+}
+
+Debugger.prototype.calcFPS = function() {
+   const now = performance.now();
+   
+   while (this.FPSRecords.length > 0 && this.FPSRecords[0] <= now - 1000)
+      this.FPSRecords.shift();
+   
+   this.FPSRecords.push(now);
+   document.getElementById("fps").innerHTML = this.FPSRecords.length;
+};

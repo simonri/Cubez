@@ -1,7 +1,8 @@
 class Input {
   constructor() {
     this.pressedKeys = {};
-    this.mouse = { x: 0, y: 0 };
+    this.mouseMov = [0, 0];
+    this.mouse = [];
   
     document.addEventListener("keydown", e => {
       this.setKey(e, true);
@@ -17,13 +18,24 @@ class Input {
     
     document.onmousedown = e => {
       document.onmousemove = e => {
-        this.mouse.x += e.movementX;
-        this.mouse.y += e.movementY;
+        this.mouseMov[0] += e.movementX;
+        this.mouseMov[1] += e.movementY;
+        
+        this.mouse[0] = e.clientX;
+        this.mouse[1] = e.clientY;
       };
+    };
+    
+    document.onmousemove = e => {
+      this.mouse[0] = e.clientX;
+      this.mouse[1] = e.clientY;
     };
   
     document.onmouseup = () => {
-      document.onmousemove = null;
+      document.onmousemove = e => {
+        this.mouse[0] = e.clientX;
+        this.mouse[1] = e.clientY;
+      };
     };
     
     window.Input = {

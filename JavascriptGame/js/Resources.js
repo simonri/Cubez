@@ -61,6 +61,7 @@
     load: load,
     get: get,
     onReady: onReady,
-    isReady: isReady
+    isReady: isReady,
+    time: Date.now(),
   };
 })();

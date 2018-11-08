@@ -19,22 +19,34 @@ var toIso = function(x, y, z, w, h) {
 };
 
 var inside = function(point, vs) {
-    var x = point[0], y = point[1];
-
-    var inside = false;
-    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-        var xi = vs[i][0], yi = vs[i][1];
-        var xj = vs[j][0], yj = vs[j][1];
-
-        var intersect = ((yi > y) != (yj > y))
-            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-        if (intersect) inside = !inside;
-    }
-
-    return inside;
+  var x = point[0], y = point[1];
+  
+  var inside = false;
+  for(var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+    var xi = vs[i][0], yi = vs[i][1];
+    var xj = vs[j][0], yj = vs[j][1];
+    
+    var intersect = ((yi > y) != (yj > y))
+      && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+    if(intersect) inside = !inside;
+  }
+  
+  return inside;
 };
 
-function shuffle(array) {
+var insideRect = function(point, vs, size) {
+  var x = point[0], y = point[1];
+  
+  var inside = false;
+  if(x > vs[0] && x < vs[0] + size[0] && y > vs[1] && y < vs[1] + size[1])
+    inside = !inside;
+    
+  return inside;
+};
+
+
+
+var shuffle = function(array) {
   var currentIndex = array.length, temporaryValue, randomIndex;
 
   while (0 !== currentIndex) {
@@ -47,10 +59,11 @@ function shuffle(array) {
   }
 
   return array;
-}
+};
 
 window.Utils = {
   toIso: toIso,
   inside: inside,
-  shuffle: shuffle
+  shuffle: shuffle,
+  insideRect: insideRect
 };

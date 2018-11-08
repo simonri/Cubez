@@ -13,7 +13,7 @@ var gameTime = 0;
 
 var ctx, canvas;
 
-var debug, input, world;
+var debug, input, world, gui;
 
 class CVS {
   constructor() {
@@ -35,6 +35,7 @@ class CVS {
     debug = new Debug();
     input = new Input();
     world = new World();
+    gui = new Gui();
 
     this.reset();
     lastTime = Date.now();
@@ -68,6 +69,7 @@ class CVS {
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
     world.renderEntities();
+    gui.render();
   }
 
   reset() {

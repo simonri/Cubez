@@ -22,12 +22,17 @@ class Sprite {
     
     var pos = Utils.toIso(x, y, z, this.size[0], this.size[1]);
     
-    if(Utils.inside(input.mouse, polygon))
+    if(Utils.inside(input.mouse, polygon)) {
       this.z += (100 - z) * 0.04;
+    }
     
     if(this.z !== 0)
       this.z *= 0.9;
+    
+    if(Math.floor(this.z * 10) === 0)
+      this.z = 0;
       
+    
     ctx.drawImage(
       this.texture,
       0,

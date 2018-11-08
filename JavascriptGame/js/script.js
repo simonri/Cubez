@@ -36,7 +36,9 @@ class CVS {
     input = new Input();
     world = new World();
     gui = new Gui();
-
+    
+    input.setMouseEvents();
+    
     this.reset();
     lastTime = Date.now();
     this.main();

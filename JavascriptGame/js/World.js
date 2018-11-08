@@ -1,16 +1,6 @@
 class World {
   constructor() {
-    let seed = [
-      [1, 0, 1, 0, 1, 1, 0, 1, 1],
-      [1, 0, 0, 0, 0, 1, 0, 1, 1],
-      [1, 0, 0, 1, 0, 1, 1, 0, 0],
-      [1, 0, 1, 0, 0, 1, 1, 1, 1],
-      [1, 0, 0, 0, 1, 1, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 0, 0, 0],
-      [1, 1, 1, 0, 1, 1, 0, 0, 0],
-      [1, 1, 1, 1, 1, 1, 0, 0, 0],
-      [1, 1, 1, 1, 1, 1, 0, 0, 0],
-    ];
+    let seed = this.genRandomWorld(24, 24, [0, 1]);
     
     seed.forEach(function(itm, inx) {
       seed[inx] = Utils.shuffle(itm);
@@ -20,7 +10,23 @@ class World {
     
     document.getElementById("save").onclick = () => this.save();
   }
-
+  
+  genRandomWorld(width, height, c) {
+    props.cols = width;
+    props.rows = height;
+    
+    var ret = [];
+    for(var x = 0; x < width; x++) {
+      var xDat = [];
+      for(var y = 0; y < height; y++) {
+        xDat.push(c[Math.floor(Math.random() * c.length)]);
+      }
+      ret.push(xDat);
+    }
+    
+    return ret;
+  }
+  
   genEntities(seed) {
     const entities = [];
 

@@ -3,6 +3,7 @@ body, canvas {
     margin: 0;
     overflow: hidden;
     font-family: Arial;
+    user-select: none;
 }
 
 canvas {
@@ -13,8 +14,8 @@ canvas {
 
 #fps {
     position: fixed;
-    top: 10px;
-    left: 10px;
+    bottom: 10px;
+    right: 40px;
     font-size: 14px;
     color: white;
     cursor: pointer;

@@ -22,6 +22,10 @@ class Sprite {
     
     var pos = Utils.toIso(x, y, z, this.size[0], this.size[1]);
     
+    // Don't render if not visible
+    if(pos[0] < 0 - this.size[0] || pos[0] > window.innerWidth || pos[1] < 0 - this.size[1] || pos[1] > window.innerHeight)
+      return;
+    
     if(Utils.inside(input.mouse, polygon)) {
       this.z += (100 - z) * 0.04;
     }

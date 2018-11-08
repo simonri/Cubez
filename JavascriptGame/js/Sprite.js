@@ -1,17 +1,17 @@
 class Sprite {
-  constructor(texture, pos, size) {
+  constructor(id, pos, size) {
+    this.type = id;
+    
     this.pos = pos;
     this.size = size;
     
-    this.z = 0;
-    
-    this.texture = texture;
-  }
-
+    this.texture = resources.get(id);
+}
+  
   render() {
     var x = this.pos[0],
         y = this.pos[1],
-        z = this.z;
+        z = this.pos[2];
     
     var polygon = [
       Utils.toIso(x - 0.5, y + 1.5, 0, this.size[0], this.size[1]),
@@ -25,16 +25,6 @@ class Sprite {
     // Don't render if not visible
     if(pos[0] < 0 - this.size[0] || pos[0] > window.innerWidth || pos[1] < 0 - this.size[1] || pos[1] > window.innerHeight)
       return;
-    
-    if(Utils.inside(input.mouse, polygon)) {
-      this.z += (100 - z) * 0.04;
-    }
-    
-    if(this.z !== 0)
-      this.z *= 0.9;
-    
-    if(Math.floor(this.z * 10) === 0)
-      this.z = 0;
       
     
     ctx.drawImage(
@@ -50,7 +40,5 @@ class Sprite {
     );
   }
 
-  update(pos) {
-    this.pos = pos;
-  }
+  update(pos) { this.pos = pos; }
 }

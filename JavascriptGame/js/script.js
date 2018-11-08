@@ -25,7 +25,7 @@ class CVS {
 
     document.body.insertAdjacentElement("afterbegin", canvas);
 
-    resources.load(["assets/voxelTile_47.png", "assets/voxelTile_41.png"]);
+    resources.load(["assets/voxelTile_47.png", "assets/voxelTile_41.png", "assets/voxelTile_13.png"]);
     resources.onReady(this.init.bind(this));
   }
 

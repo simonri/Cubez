@@ -1,4 +1,6 @@
 var toIso = function(x, y, z, w, h) {
+  x += z;
+  y -= z;
   var retX =
     (x * w) / 2 +
     (y * w) / 2 +
@@ -13,8 +15,6 @@ var toIso = function(x, y, z, w, h) {
     props.scrollY -
     ((props.rows / 2) * (h - props.offset)) / 2;
     
-  retY -= z;
-
   return [retX + props.scrollX, retY + props.scrollY];
 };
 

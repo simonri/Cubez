@@ -1,6 +1,7 @@
 class World {
   constructor() {
-    let seed = this.genRandomWorld(24, 24, [0, 1]);
+    let seed = this.genRandomWorld(24, 24, 2, [0, 1, 2]);
+    // TODO: Add chunks.
     
     seed.forEach(function(itm, inx) {
       seed[inx] = Utils.shuffle(itm);
@@ -9,19 +10,25 @@ class World {
     this.entities = this.genEntities(seed);
     
     document.getElementById("save").onclick = () => this.save();
+    
+    console.log(this.entities);
   }
   
-  genRandomWorld(width, height, c) {
-    props.cols = width;
-    props.rows = height;
+  genRandomWorld(sX, sY, sZ, c) {
+    props.cols = sX;
+    props.rows = sY;
     
     var ret = [];
-    for(var x = 0; x < width; x++) {
-      var xDat = [];
-      for(var y = 0; y < height; y++) {
-        xDat.push(c[Math.floor(Math.random() * c.length)]);
+    for(var z = 0; z < sZ; z++) {
+      var zDat = [];
+      for(var x = 0; x < sX; x++) {
+        var xDat = [];
+        for(var y = 0; y < sY; y++) {
+          xDat.push(c[Math.floor(Math.random() * c.length)]);
+        }
+        zDat.push(xDat);
       }
-      ret.push(xDat);
+      ret.push(zDat);
     }
     
     return ret;
@@ -29,13 +36,14 @@ class World {
   
   genEntities(seed) {
     const entities = [];
-
-    for (let x = 0; x < seed.length; x++) {
-      for (let y = seed.length - 1; y >= 0; y--) {
-        entities.push(new Sprite(resources.get(seed[x][y]), [x, y], [111, 128]));
+    for(var z = seed.length - 1; z >= 0; z--) {
+      for(var x = 0; x < seed[0].length; x++) {
+        for(var y = seed[0].length - 1; y >= 0; y--) {
+          entities.push(new Sprite(seed[z][x][y], [x, y, z], [111, 128]));
+        }
       }
     }
-
+    
     return entities;
   }
 

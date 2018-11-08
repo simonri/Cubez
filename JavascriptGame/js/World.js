@@ -1,49 +1,55 @@
 class World {
   constructor() {
-    let seed = this.genRandomWorld(24, 24, 2, [0, 1, 2]);
+    let seed = this.genRandomWorld(
+      4,
+      4,
+      4,
+      [[0, 1], [0, 1], [0, 1], [2]],
+      Date.now()
+    );
+
     // TODO: Add chunks.
-    
+
     seed.forEach(function(itm, inx) {
       seed[inx] = Utils.shuffle(itm);
     });
 
     this.entities = this.genEntities(seed);
-    
+
     document.getElementById("save").onclick = () => this.save();
-    
-    console.log(this.entities);
   }
-  
-  genRandomWorld(sX, sY, sZ, c) {
+
+  genRandomWorld(sX, sY, sZ, c, time) {
     props.cols = sX;
     props.rows = sY;
-    
+
     var ret = [];
-    for(var z = 0; z < sZ; z++) {
+    for (var z = 0; z < sZ; z++) {
       var zDat = [];
-      for(var x = 0; x < sX; x++) {
+      for (var x = 0; x < sX; x++) {
         var xDat = [];
-        for(var y = 0; y < sY; y++) {
-          xDat.push(c[Math.floor(Math.random() * c.length)]);
+        for (var y = 0; y < sY; y++) {
+          xDat.push(c[z][Math.floor(Math.random() * c[z].length)]);
         }
         zDat.push(xDat);
       }
       ret.push(zDat);
     }
-    
+
+    debug.log("Generated world", time);
     return ret;
   }
-  
+
   genEntities(seed) {
     const entities = [];
-    for(var z = seed.length - 1; z >= 0; z--) {
-      for(var x = 0; x < seed[0].length; x++) {
-        for(var y = seed[0].length - 1; y >= 0; y--) {
+    for (var z = seed.length - 1; z >= 0; z--) {
+      for (var x = 0; x < seed[0].length; x++) {
+        for (var y = seed[0].length - 1; y >= 0; y--) {
           entities.push(new Sprite(seed[z][x][y], [x, y, z], [111, 128]));
         }
       }
     }
-    
+
     return entities;
   }
 
@@ -60,6 +66,14 @@ class World {
 
   renderEntity(entity) {
     entity.render();
+  }
+  
+  mouseDown(e) {
+    for (let i = this.entities.length - 1; i >= 0; i--) {
+      if(this.entities[i].hover) {
+        this.entities[i].mouseDown();
+      }
+    }
   }
 
   genTextFile() {

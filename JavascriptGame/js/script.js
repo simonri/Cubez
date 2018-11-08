@@ -24,15 +24,15 @@ class CVS {
     canvas.height = window.innerHeight;
 
     document.body.insertAdjacentElement("afterbegin", canvas);
-
-    resources.load(["assets/voxelTile_47.png", "assets/voxelTile_41.png", "assets/voxelTile_13.png"]);
+    debug = new Debug();
+    
+    resources.load(["assets/voxelTile_09.png", "assets/voxelTile_26.png", "assets/voxelTile_13.png"]);
     resources.onReady(this.init.bind(this));
   }
 
   init() {
-    console.log("All assets loaded (" + (Date.now() - resources.time) + "ms) ");
-
-    debug = new Debug();
+    debug.log("All assets loaded", resources.time);
+    
     input = new Input();
     world = new World();
     gui = new Gui();

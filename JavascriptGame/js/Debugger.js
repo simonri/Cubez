@@ -17,4 +17,8 @@ class Debug {
     this.FPSRecords.push(now);
     document.getElementById("fps").innerHTML = this.FPSRecords.length;
   }
+  
+  log(msg, time) {
+    console.log(msg + " (" + (Date.now() - time) + "ms)");
+  }
 }

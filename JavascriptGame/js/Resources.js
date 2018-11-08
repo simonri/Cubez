@@ -42,6 +42,10 @@
 
     return resourceCache[urls[url]];
   }
+  
+  function getLen() {
+    return Object.keys(resourceCache).length;
+  }
 
   function isReady() {
     let ready = true;
@@ -60,6 +64,7 @@
   window.resources = {
     load: load,
     get: get,
+    getLen: getLen,
     onReady: onReady,
     isReady: isReady,
     time: Date.now(),

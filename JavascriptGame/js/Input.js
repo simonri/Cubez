@@ -27,6 +27,7 @@ class Input {
   setMouseEvents() {
     document.onmousedown = e => {
       gui.mouseDown(e);
+      world.mouseDown(e);
       
       document.onmousemove = e => {
         this.mouseMov[0] += e.movementX;

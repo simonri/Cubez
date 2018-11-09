@@ -68,10 +68,10 @@ class World {
     entity.render();
   }
   
-  mouseDown(e) {
+  leftMouseDown(e) {
     for (let i = this.entities.length - 1; i >= 0; i--) {
       if(this.entities[i].hover) {
-        this.entities[i].mouseDown();
+        this.entities[i].leftMouseDown();
       }
     }
   }

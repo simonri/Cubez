@@ -3,7 +3,7 @@ class Gui {
     this.items = [];
 
     this.addItems();
-    this.selected;
+    this.selected = 0;
   }
 
   render() {
@@ -23,7 +23,7 @@ class Gui {
     }
   }
 
-  mouseDown(e) {
+  leftMouseDown(e) {
     this.items.forEach(function(item) {
       if(item.hover) {
         gui.selected = item.id;
@@ -40,7 +40,7 @@ class Gui {
     });
   }
 
-  mouseUp() {
+  leftMouseUp() {
     this.items.forEach(function(item) {
       item.squeezed = false;
     });

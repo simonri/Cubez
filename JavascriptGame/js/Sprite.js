@@ -47,7 +47,7 @@ class Sprite {
     );
   }
   
-  mouseDown() {
+  leftMouseDown() {
     this.id = gui.selected;
     this.texture = resources.get(this.id);
   }

@@ -25,7 +25,18 @@ class Gui {
 
   mouseDown(e) {
     this.items.forEach(function(item) {
-      item.mouseDown(e);
+      if(item.hover) {
+        gui.selected = item.id;
+        item.squeezed = true;
+      }
+    });
+    
+    this.items.forEach(function(item) {
+      if(gui.selected == item.id) {
+        item.selected = true;
+      } else {
+        item.selected = false;
+      }
     });
   }
 
@@ -47,6 +58,7 @@ class GuiItemTemplate {
     this.squeezed = false;
     this.alpha = 0.7;
 
+    this.rotation = 0;
     this.hover = false;
   }
 }
@@ -73,26 +85,15 @@ class GuiItem extends GuiItemTemplate {
       this.hover = false;
     }
 
-    if (this.selected) {
-      ctx.beginPath();
-      ctx.fillStyle = "#ffffff";
-      ctx.rect(
-        this.pos[0] - (this.size[0] * this.scale - this.size[0]) / 2,
-        this.pos[1] - (this.size[1] * this.scale - this.size[1]) / 2,
-        this.size[0] * this.scale,
-        this.size[1] * this.scale
-      );
-      ctx.fill();
-    }
-
     ctx.globalAlpha = this.alpha;
 
     if (this.squeezed && this.hover) {
       this.scale += (0.9 - this.scale) * 0.14;
     } else {
       if (this.hover) {
-        this.scale += (1.2 - this.scale) * 0.14;
+        this.scale += (1.1 - this.scale) * 0.14;
         this.alpha += (1 - this.alpha) * 0.14;
+        this.rotation += (90 - this.rotation) * 0.14;
       } else {
         if (this.scale != 1) {
           this.scale = (this.scale - 1) * 0.8 + 1;
@@ -100,9 +101,12 @@ class GuiItem extends GuiItemTemplate {
         if (this.alpha != 0.7) {
           this.alpha = (this.alpha - 0.7) * 0.8 + 0.7;
         }
+        if(this.rotation !== 0) {
+          this.rotation = (this.rotation) * 0.8;
+        }
       }
     }
-
+    
     ctx.drawImage(
       this.texture,
       0,
@@ -116,17 +120,18 @@ class GuiItem extends GuiItemTemplate {
     );
 
     ctx.globalAlpha = 1;
-  }
-
-  mouseDown(e) {
-    if (Utils.insideRect([e.clientX, e.clientY], this.pos, this.size)) {
-      this.squeezed = true;
-    }
-    if (this.hover) {
-      this.selected = true;
-      gui.selected = this.id;
-    } else {
-      this.selected = false;
+    
+    if (this.selected) {
+      ctx.beginPath();
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 2,
+      ctx.rect(
+        this.pos[0] - ((this.size[0] * 1.4 - this.size[0]) / 2),
+        this.pos[1] - ((this.size[0] * 1.4 - this.size[1]) / 2),
+        this.size[0] * 1.4,
+        this.size[0] * 1.4
+      );
+      ctx.stroke();
     }
   }
 }

@@ -15,10 +15,10 @@ class Sprite {
         z = this.pos[2];
     
     var polygon = [
-      Utils.toIso(x - 0.5, y + 1.5, 0, this.size[0], this.size[1]),
-      Utils.toIso(x + 0.5, y + 1.5, 0, this.size[0], this.size[1]),
-      Utils.toIso(x + 0.5, y + 0.5, 0, this.size[0], this.size[1]),
-      Utils.toIso(x - 0.5, y + 0.5, 0, this.size[0], this.size[1])
+      Utils.toIso(x - 0.5, y + 1.5, z, this.size[0], this.size[1]),
+      Utils.toIso(x + 0.5, y + 1.5, z, this.size[0], this.size[1]),
+      Utils.toIso(x + 0.5, y + 0.5, z, this.size[0], this.size[1]),
+      Utils.toIso(x - 0.5, y + 0.5, z, this.size[0], this.size[1])
     ];
     
     var pos = Utils.toIso(x, y, z, this.size[0], this.size[1]);
@@ -45,16 +45,9 @@ class Sprite {
       this.texture.width,
       this.texture.height
     );
-    
-    ctx.beginPath();
-    ctx.fillStyle = "black";
-    ctx.rect(polygon[2][0], polygon[2][1], 4, 4);
-    ctx.fill();
   }
   
   mouseDown() {
-    console.log(gui.selected);
-    
     this.id = gui.selected;
     this.texture = resources.get(this.id);
   }

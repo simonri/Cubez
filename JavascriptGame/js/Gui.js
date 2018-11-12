@@ -21,6 +21,8 @@ class Gui {
     for(var i = 0; i < resources.getLen(); i++) {
       this.items.push(new GuiItem(i + "-gui-item", i, this.items.length));
     }
+    
+    this.items[0].selected = true;
   }
 
   leftMouseDown(e) {
@@ -84,9 +86,23 @@ class GuiItem extends GuiItemTemplate {
     } else {
       this.hover = false;
     }
-
-    ctx.globalAlpha = this.alpha;
-
+    
+    ctx.globalAlpha = 0.4;
+    
+    if (this.selected) {
+      ctx.beginPath();
+      ctx.lineJoin = "round";
+      ctx.lineWidth = 6;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(
+        this.pos[0] - ((this.size[0] * 1.5 - this.size[0]) / 2),
+        this.pos[1] - ((this.size[0] * 1.5 - this.size[1]) / 2),
+        this.size[0] * 1.5,
+        this.size[0] * 1.5
+      );
+      //ctx.fill();
+    }
+    
     if (this.squeezed && this.hover) {
       this.scale += (0.9 - this.scale) * 0.14;
     } else {
@@ -107,6 +123,8 @@ class GuiItem extends GuiItemTemplate {
       }
     }
     
+    ctx.globalAlpha = this.alpha;
+    
     ctx.drawImage(
       this.texture,
       0,
@@ -118,20 +136,7 @@ class GuiItem extends GuiItemTemplate {
       this.size[0] * this.scale,
       this.size[1] * this.scale
     );
-
-    ctx.globalAlpha = 1;
     
-    if (this.selected) {
-      ctx.beginPath();
-      ctx.strokeStyle = "#ffffff";
-      ctx.lineWidth = 2,
-      ctx.rect(
-        this.pos[0] - ((this.size[0] * 1.4 - this.size[0]) / 2),
-        this.pos[1] - ((this.size[0] * 1.4 - this.size[1]) / 2),
-        this.size[0] * 1.4,
-        this.size[0] * 1.4
-      );
-      ctx.stroke();
-    }
+    ctx.globalAlpha = 1;
   }
 }

@@ -4,7 +4,7 @@ class Sprite {
     this.index = index;
     
     this.pos = pos;
-    this.offset =10;
+    this.offset = 10;
     this.size = size;
     
     this.texture = resources.get(id);
@@ -27,7 +27,7 @@ class Sprite {
     
     var pos = Utils.toIso(x, y, z + this.offset, this.size[0], this.size[1]);
     
-    if(!this.animate && x - y + 4 < gameTime * 6) {
+    if(!this.animate && x - y + 4 < gameTime * 8) {
       this.animate = true;
     }
     

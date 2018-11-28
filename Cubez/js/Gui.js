@@ -4,14 +4,25 @@ class Gui {
 
     this.addItems();
     this.selected = 0;
+    
+    this.boxPosition = [window.innerWidth / 2, window.innerHeight / 2];
   }
 
   render() {
-    /* Render White Box */
-    /* ctx.fillStyle = "#ffffff";
-    /* ctx.rect(0, 0, this.items[0].size[0] + this.items[0].padding * 2, window.innerHeight);
-    /* ctx.fill(); */
-
+    ctx.globalAlpha = 0.4;
+    
+    this.boxPosition[0] += (this.items[this.selected].pos[0] - ((this.items[0].size[0] * 1.5 - this.items[0].size[0]) / 2) - this.boxPosition[0]) * 0.2;
+    this.boxPosition[1] += (this.items[this.selected].pos[1] - ((this.items[0].size[0] * 1.5 - this.items[0].size[1]) / 2) - this.boxPosition[1]) * 0.2;
+    
+    ctx.beginPath();
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(
+      this.boxPosition[0],
+      this.boxPosition[1],
+      this.items[0].size[0] * 1.5,
+      this.items[0].size[0] * 1.5
+    );
+    
     this.items.forEach(function(item) {
       item.render();
     });
@@ -85,22 +96,6 @@ class GuiItem extends GuiItemTemplate {
       this.hover = true;
     } else {
       this.hover = false;
-    }
-    
-    ctx.globalAlpha = 0.4;
-    
-    if (this.selected) {
-      ctx.beginPath();
-      ctx.lineJoin = "round";
-      ctx.lineWidth = 6;
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(
-        this.pos[0] - ((this.size[0] * 1.5 - this.size[0]) / 2),
-        this.pos[1] - ((this.size[0] * 1.5 - this.size[1]) / 2),
-        this.size[0] * 1.5,
-        this.size[0] * 1.5
-      );
-      //ctx.fill();
     }
     
     if (this.squeezed && this.hover) {

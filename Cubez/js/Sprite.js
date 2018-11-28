@@ -10,6 +10,7 @@ class Sprite {
     this.texture = resources.get(id);
     this.hover = false;
     
+    this.moving = moving;
     this.animate = false;
 }
   
@@ -25,7 +26,11 @@ class Sprite {
       Utils.toIso(x - 0.5, y + 0.5, z, this.size[0], this.size[1])
     ];
     
-    var pos = Utils.toIso(x, y, z + this.offset, this.size[0], this.size[1]);
+    if(!this.moving) {
+      var pos = Utils.toIso(x, y, z + this.offset, this.size[0], this.size[1]);
+    } else {
+      pos = [input.mouse[0] - this.size[0] / 2, input.mouse[1] - this.size[1] / 2, 0];
+    }
     
     if(!this.animate && x - y + 4 < gameTime * 8) {
       this.animate = true;
@@ -36,8 +41,9 @@ class Sprite {
     }
     
     // Don't render if not visible
-    if(pos[0] < 0 - this.size[0] || pos[0] > window.innerWidth || pos[1] < 0 - this.size[1] || pos[1] > window.innerHeight && !this.animate)
+    if(pos[0] < 0 - this.size[0] || pos[0] > window.innerWidth || pos[1] < 0 - this.size[1] || pos[1] > window.innerHeight && !this.animate) {
       return;
+    }
     
     if(Utils.inside(input.mouse, polygon)) {
       this.hover = true;

@@ -41,6 +41,7 @@ class Gui {
       if(item.hover) {
         gui.selected = item.id;
         item.squeezed = true;
+        world.entities.unshift(new Sprite(item.id, [input.mouse[0], input.mouse[1], 0], [111, 128], world.numEntities, true));
       }
     });
   }

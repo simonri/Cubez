@@ -12,6 +12,7 @@ class World {
     
     this.entities = [];
     this.genEntities();
+    this.numEntities = 0;
     
     console.log(this.entities);
 
@@ -40,14 +41,13 @@ class World {
   }
 
   genEntities() {
-    var num = 0;
     var seed = this.seed;
     console.log(this.seed);
     for (var z = seed.length - 1; z >= 0; z--) {
       for (var x = 0; x < seed[0].length; x++) {
         for (var y = seed[0].length - 1; y >= 0; y--) {
-          num++;
-          this.entities.push(new Sprite(seed[z][x][y], [x, y, z], [111, 128], num));
+          this.numEntities++;
+          this.entities.push(new Sprite(seed[z][x][y], [x, y, z], [111, 128], this.numEntities));
         }
         
       }

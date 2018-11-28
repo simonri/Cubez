@@ -5,23 +5,25 @@ class Gui {
     this.addItems();
     this.selected = 0;
     
-    this.boxPosition = [window.innerWidth / 2, window.innerHeight / 2];
+    this.boxPosition = [20, 20];
   }
 
   render() {
-    ctx.globalAlpha = 0.4;
+    ctx.globalAlpha = 0.8;
     
     this.boxPosition[0] += (this.items[this.selected].pos[0] - ((this.items[0].size[0] * 1.5 - this.items[0].size[0]) / 2) - this.boxPosition[0]) * 0.2;
     this.boxPosition[1] += (this.items[this.selected].pos[1] - ((this.items[0].size[0] * 1.5 - this.items[0].size[1]) / 2) - this.boxPosition[1]) * 0.2;
     
     ctx.beginPath();
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 3;
+    ctx.rect(
       this.boxPosition[0],
       this.boxPosition[1],
       this.items[0].size[0] * 1.5,
       this.items[0].size[0] * 1.5
     );
+    ctx.stroke();
     
     this.items.forEach(function(item) {
       item.render();
@@ -32,8 +34,6 @@ class Gui {
     for(var i = 0; i < resources.getLen(); i++) {
       this.items.push(new GuiItem(i + "-gui-item", i, this.items.length));
     }
-    
-    this.items[0].selected = true;
   }
 
   leftMouseDown(e) {
@@ -41,14 +41,6 @@ class Gui {
       if(item.hover) {
         gui.selected = item.id;
         item.squeezed = true;
-      }
-    });
-    
-    this.items.forEach(function(item) {
-      if(gui.selected == item.id) {
-        item.selected = true;
-      } else {
-        item.selected = false;
       }
     });
   }

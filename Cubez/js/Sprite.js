@@ -1,5 +1,5 @@
 class Sprite {
-  constructor(id, pos, size, index) {
+  constructor(id, pos, size, index, moving = false) {
     this.id = id;
     this.index = index;
     

@@ -1,12 +1,16 @@
 class Sprite {
-  constructor(id, pos, size) {
+  constructor(id, pos, size, index) {
     this.id = id;
+    this.index = index;
     
     this.pos = pos;
+    this.offset =10;
     this.size = size;
     
     this.texture = resources.get(id);
     this.hover = false;
+    
+    this.animate = false;
 }
   
   render() {
@@ -21,10 +25,18 @@ class Sprite {
       Utils.toIso(x - 0.5, y + 0.5, z, this.size[0], this.size[1])
     ];
     
-    var pos = Utils.toIso(x, y, z, this.size[0], this.size[1]);
+    var pos = Utils.toIso(x, y, z + this.offset, this.size[0], this.size[1]);
+    
+    if(!this.animate && x - y + 4 < gameTime * 6) {
+      this.animate = true;
+    }
+    
+    if(this.animate) {
+      this.offset *= 0.93;
+    }
     
     // Don't render if not visible
-    if(pos[0] < 0 - this.size[0] || pos[0] > window.innerWidth || pos[1] < 0 - this.size[1] || pos[1] > window.innerHeight)
+    if(pos[0] < 0 - this.size[0] || pos[0] > window.innerWidth || pos[1] < 0 - this.size[1] || pos[1] > window.innerHeight && !this.animate)
       return;
     
     if(Utils.inside(input.mouse, polygon)) {

@@ -5,7 +5,8 @@ var props = {
   rows: 9,
   scrollX,
   scrollY,
-  offset: 96
+  offset: 96,
+  worldLoaded: false,
 };
 
 var lastTime;
@@ -47,7 +48,7 @@ class CVS {
   main() {
     let now = Date.now();
     let dt = (now - lastTime) / 1000.0;
-
+    
     this.update(dt);
     this.render(dt);
 

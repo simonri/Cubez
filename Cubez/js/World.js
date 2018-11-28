@@ -1,20 +1,19 @@
 class World {
   constructor() {
-    let seed = this.genRandomWorld(
+    this.seed = this.genRandomWorld(
       4,
       4,
-      4,
-      [[0, 1], [0, 1], [0, 1], [2]],
+      2,
+      [[1],[2]],
       Date.now()
     );
 
     // TODO: Add chunks.
-
-    seed.forEach(function(itm, inx) {
-      seed[inx] = Utils.shuffle(itm);
-    });
-
-    this.entities = this.genEntities(seed);
+    
+    this.entities = [];
+    this.genEntities();
+    
+    console.log(this.entities);
 
     document.getElementById("save").onclick = () => this.save();
   }
@@ -35,27 +34,29 @@ class World {
       }
       ret.push(zDat);
     }
-
+    
     debug.log("Generated world", time);
     return ret;
   }
 
-  genEntities(seed) {
-    const entities = [];
+  genEntities() {
+    var num = 0;
+    var seed = this.seed;
+    console.log(this.seed);
     for (var z = seed.length - 1; z >= 0; z--) {
       for (var x = 0; x < seed[0].length; x++) {
         for (var y = seed[0].length - 1; y >= 0; y--) {
-          entities.push(new Sprite(seed[z][x][y], [x, y, z], [111, 128]));
+          num++;
+          this.entities.push(new Sprite(seed[z][x][y], [x, y, z], [111, 128], num));
         }
+        
       }
     }
-
-    return entities;
   }
 
   updateEntities(dt) {
-    props.scrollX += (input.mouseMov[0] * 0.5 - props.scrollX) * 0.1; // * dt
-    props.scrollY += (input.mouseMov[1] * 0.5 - props.scrollY) * 0.1; // * dt
+    props.scrollX += (input.mouseMov[0] * 0.5 - props.scrollX) * 0.1;
+    props.scrollY += (input.mouseMov[1] * 0.5 - props.scrollY) * 0.1;
   }
 
   renderEntities() {
